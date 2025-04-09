@@ -9,7 +9,7 @@ type Question = {
   type: string;
   description?: string;
   required: boolean;
-  options?: { id: number; value: string }[]; // made optional
+  options?: { id: number; value: string }[]; 
 };
 
 const Survey = (): JSX.Element => {

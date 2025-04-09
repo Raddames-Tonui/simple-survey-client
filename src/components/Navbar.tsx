@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Navbar = (): JSX.Element => {
   return (
@@ -7,19 +7,27 @@ const Navbar = (): JSX.Element => {
       <div className="flex justify-between items-center w-full max-w-screen-xl mx-auto h-full px-4">
         <div className="flex items-center">
           <img src="/survey-icon.webp" alt="" className="h-10 w-10" />
-          <p className="text-lg font-bold text-xl">TumaForm</p>
+          <p className="text-lg font-bold text-xl">JazaForm</p>
         </div>
-        <ul className="flex space-x-4 font-semibold text-lg">
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/about">About</Link>
-          </li>
-          <li>
-            <Link to="/survey">Survey</Link>
-          </li>
-        </ul>
+        <div className="flex items-center justify-center space-x-4">
+          <ul className="flex space-x-4 font-semibold text-md">
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+        
+            <li>
+              <Link to="/survey">Survey</Link>
+            </li>
+          </ul>
+          <button className="relative w-24 h-10 rounded-3xl text-sm font-inherit border-none overflow-hidden z-10 bg-gradient-to-r from-[#0190B0] to-[#24C8ED] hover:bg-gradient-to-r hover:from-[#4A8A98]  transition-all duration-500 ring-slate-900 hover:ring-black">
+            <NavLink
+              to="/signin"
+              className="relative z-10 text-black font-semibold text-white "
+            >
+              Sign In
+            </NavLink>
+          </button>
+        </div>
       </div>
     </nav>
   );
