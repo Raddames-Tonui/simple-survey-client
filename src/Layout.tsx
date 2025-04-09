@@ -6,7 +6,7 @@ import { Outlet } from "react-router-dom";
 
 const Layout = (): JSX.Element => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-100">
       <Navbar />
       <Toaster
         position="top-right"
@@ -14,11 +14,11 @@ const Layout = (): JSX.Element => {
         toastOptions={{
           style: {
             zIndex: 100,
-            top: "10vh",
+            top: "12vh",
           },
         }}
       />
-      <main className="flex-grow">
+      <main className="flex-grow mx-auto md:min-w-[80vw]  xl:min-w-[70vw]">
         <Outlet />
       </main>
       <Footer />
