@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { server_url } from "../../config.json";
 
+type Option = {
+  id: number;
+  value: string;
+};
+
 type Question = {
   id: number;
   name: string;
@@ -9,29 +14,42 @@ type Question = {
   type: string;
   description?: string;
   required: boolean;
-  options?: { id: number; value: string }[]; 
+  options?: Option[];
+};
+
+type SurveyData = {
+  survey_title: string;
+  survey_description?: string;
+  questions: Question[];
 };
 
 const Survey = (): JSX.Element => {
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [survey, setSurvey] = useState<SurveyData | null>(null);
   const [answers, setAnswers] = useState<{ [key: number]: any }>({});
   const [errors, setErrors] = useState<{ [key: number]: string }>({});
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const fetchSurvey = async () => {
       try {
         const response = await fetch(`${server_url}/api/questions`);
         const data = await response.json();
-        setQuestions(
-          data.questions.sort((a: Question, b: Question) => a.id - b.id)
-        );
+
+        const surveyInfo = {
+          survey_title: data.questions[0]?.survey_title || "Survey",
+          survey_description: data.questions[0]?.survey_description || "",
+          questions: data.questions
+            .map((q: any) => q.question) // Extract questions data
+            .sort((a: Question, b: Question) => a.id - b.id), // Sort questions by id
+        };
+
+        setSurvey(surveyInfo);
       } catch (error) {
-        console.error("Error fetching questions:", error);
-        toast.error("Failed to load questions.");
+        console.error("Error fetching survey:", error);
+        toast.error("Failed to load survey.");
       }
     };
 
-    fetchQuestions();
+    fetchSurvey();
   }, []);
 
   const handleAnswerChange = (id: number, value: any) => {
@@ -70,6 +88,7 @@ const Survey = (): JSX.Element => {
           onChange={(e) =>
             handleAnswerChange(id, e.target.files?.[0]?.name || "")
           }
+          className=""
         />
       );
     }
@@ -118,11 +137,13 @@ const Survey = (): JSX.Element => {
 
     // Validate required fields
     const newErrors: { [key: number]: string } = {};
-    questions.forEach((question) => {
-      if (question.required && !answers[question.id]) {
-        newErrors[question.id] = "This field is required";
-      }
-    });
+    if (survey?.questions) {
+      survey.questions.forEach((question) => {
+        if (question.required && !answers[question.id]) {
+          newErrors[question.id] = "This field is required";
+        }
+      });
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -134,17 +155,36 @@ const Survey = (): JSX.Element => {
     toast.success("Survey submitted successfully!");
   };
 
+  if (!survey) {
+    return <div>Loading survey...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-white my-4 md:my-6 md:border md:border-gray-300">
       <div className="py-6 md:pl-8 px-4">
-        <h1 className="text-[#0190B0] text-2xl mb-6">Survey</h1>
+        <div className="flex flex-col justify-center items-center mb-4">
+          <h1 className="text-[#0190B0] font-semibold text-xl mb-2  ">
+            {survey.survey_title}
+          </h1>
+          {survey.survey_description && (
+            <p className="text-gray-700 font-semibold">
+              {survey.survey_description}
+            </p>
+          )}
+        </div>
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-y-6">
-          {questions.map((question) => (
+          {survey.questions.map((question) => (
             <div key={question.id}>
-              <label className="font-semibold block mb-1">{question.text}</label>
+              <label className="font-semibold block mb-1">
+                {question.text}
+              </label>
               {question.description && (
-                <p className="text-sm text-gray-500 mt-1">{question.description}</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {question.description}
+                </p>
               )}
+
               {renderInput(question)}
               {errors[question.id] && (
                 <p className="text-sm text-red-500">{errors[question.id]}</p>
@@ -153,7 +193,7 @@ const Survey = (): JSX.Element => {
           ))}
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-700 py-2 px-5 text-white font-semibold w-32"
+            className="bg-[#00A5CB] hover:bg-[#0190B0]  py-2 px-5 text-white font-semibold w-32"
           >
             Submit
           </button>

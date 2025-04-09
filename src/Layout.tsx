@@ -10,7 +10,7 @@ const Layout = (): JSX.Element => {
       <Navbar />
       <Toaster
         position="top-right"
-        reverseOrder={true}
+        reverseOrder={false}
         toastOptions={{
           style: {
             zIndex: 100,
@@ -18,7 +18,8 @@ const Layout = (): JSX.Element => {
           },
         }}
       />
-      <main className="flex-grow mx-auto md:min-w-[80vw]  xl:min-w-[70vw]">
+
+      <main className="flex-grow mx-auto min-w-full md:min-w-[80vw]  lg:min-w-[70vw]">
         <Outlet />
       </main>
       <Footer />
