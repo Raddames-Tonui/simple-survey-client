@@ -16,9 +16,13 @@ interface AuthContextType {
   refresh: () => void;
 }
 
+interface AuthProviderProps {
+  children: React.ReactNode;  // defines that 'children' will be passed to this component
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [cookies, setCookie, removeCookie] = useCookies([
     "accessToken",
@@ -28,13 +32,22 @@ export const AuthProvider: React.FC = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    
     // Load user info from cookies when app starts
-    const storedUser = cookies.user ? JSON.parse(cookies.user) : null;
+    const storedUser = cookies.user;
     const storedAccessToken = cookies.accessToken;
     const storedRefreshToken = cookies.refreshToken;
 
+    // Ensure that storedUser is a valid string and parse it safely
     if (storedUser && storedAccessToken && storedRefreshToken) {
-      setUser(storedUser);
+      try {
+        // Check if cookies.user is a valid JSON string before parsing
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (e) {
+        console.error("Error parsing user data from cookies:", e);
+        setUser(null); 
+      }
     }
   }, [cookies]);
 
@@ -62,12 +75,11 @@ export const AuthProvider: React.FC = ({ children }) => {
     setCookie("user", JSON.stringify(user), { path: "/", httpOnly: false });
 
     setUser(user);
-    navigate("/dashboard");
+    navigate("/response");
   };
 
   // Logout User
   const logout = () => {
-    // Remove cookies and user info
     removeCookie("accessToken");
     removeCookie("refreshToken");
     removeCookie("user");
@@ -103,7 +115,7 @@ export const AuthProvider: React.FC = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, login, logout, refresh }}>
-      {children}
+      {children} 
     </AuthContext.Provider>
   );
 };
