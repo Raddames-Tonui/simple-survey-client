@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { server_url } from "../../config.json";
 import Loader from "../components/Loader";
+import { FaDownload, FaEye  } from "react-icons/fa";
+
 
 interface Certificate {
   id: number;
-  name: string;
+  file_url: string;
+  file_name: string;
 }
 
 interface QuestionResponse {
+  [key: string]: any; 
   response_id: number;
-  full_name: string;
-  email_address: string;
-  description: string;
-  gender: string;
-  programming_stack: string;
   certificates: Certificate[];
   date_responded: string;
 }
@@ -37,10 +36,15 @@ const SurveyResponses: React.FC = () => {
     fetchResponses();
   }, [currentPage, emailFilter]);
 
+  // Fetch responses from the server
   const fetchResponses = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${server_url}/api/questions/responses`);
+      const url = new URL(`${server_url}/api/questions/responses`);
+      url.searchParams.append("page", currentPage.toString());
+      if (emailFilter) url.searchParams.append("email_address", emailFilter);
+
+      const response = await fetch(url.toString());
       const data: PaginatedResponse = await response.json();
       setResponses(data.question_responses);
       setCurrentPage(data.current_page);
@@ -52,11 +56,9 @@ const SurveyResponses: React.FC = () => {
     }
   };
 
-  const handleEmailFilterChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setEmailFilter(event.target.value);
-    setCurrentPage(1); // Reset to page 1 when filter changes
+  const handleEmailFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmailFilter(e.target.value);
+    setCurrentPage(1);
   };
 
   const handlePagination = (page: number) => {
@@ -64,8 +66,10 @@ const SurveyResponses: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-[#0190B0] font-semibold text-xl mb-2  ">Survey Responses</h1>
+    <div className="container mx-auto my-4 md:my-6">
+      <h1 className="text-[#0190B0] font-semibold text-xl mb-2">
+        Survey Responses
+      </h1>
 
       <div className="mb-4">
         <input
@@ -73,52 +77,61 @@ const SurveyResponses: React.FC = () => {
           placeholder="Filter by Email"
           value={emailFilter}
           onChange={handleEmailFilterChange}
-          className="p-2 border border-gray-300 rounded-md"
+          className="p-2 border border-gray-300 rounded-md w-full md:w-1/2"
         />
       </div>
 
       {loading ? (
-       <div  className="flex  justify-center items-center h-[70vh]"><Loader /> </div>
+        <div className="flex justify-center items-center h-[70vh]">
+          <Loader />
+        </div>
       ) : (
-        <div>
+        <div className="bg-white p-5 border border-gray-300 shadow-md">
           <div className="space-y-4">
             {responses.map((response) => (
               <div
                 key={response.response_id}
-                className="p-4 border border-gray-200 rounded-lg shadow-md"
+                className="p-4 border border-gray-200 "
               >
-                <h2 className="font-semibold text-xl">{response.full_name}</h2>
-                <p>
-                  <strong>Email:</strong> {response.email_address}
-                </p>
-                <p>
-                  <strong>Description:</strong> {response.description}
-                </p>
-                <p>
-                  <strong>Gender:</strong> {response.gender}
-                </p>
-                <p>
-                  <strong>Programming Stack:</strong>{" "}
-                  {response.programming_stack}
-                </p>
+                {Object.entries(response).map(([key, value]) => {
+                  if (key === "certificates" || key === "response_id")
+                    return null;
+                  return (
+                    <p key={key}>
+                      <strong className="capitalize">
+                        {key.replace(/_/g, " ")}:
+                      </strong>{" "}
+                      {value}
+                    </p>
+                  );
+                })}
 
                 <div className="mt-2">
                   <strong>Certificates:</strong>
-                  <ul>
-                    {response.certificates.map((cert) => (
-                      <li key={cert.id}>{cert.name}</li>
+                  <ul className="list-disc ml-6 space-y-1">
+                    {response.certificates.map((cert: Certificate) => (
+                      <li key={cert.id} className="flex  items-center gap-2">
+                        <span>{cert.file_name}</span>
+                        <a
+                          href={cert.file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <FaEye className="w-5 h-5 text-blue-600 hover:text-blue-800" />
+                        </a>
+                        <a
+                          href={`${server_url}/api/questions/responses/certificates/${cert.id}`}
+                          download={cert.file_name}
+                        >
+                          <FaDownload className="w-5 h-5 text-green-600 hover:text-green-800" />
+                        </a>
+                      </li>
                     ))}
                   </ul>
                 </div>
 
-                <p className="mt-2">
-                  <strong>Date Responded:</strong> {response.date_responded}
-                </p>
-              </div>
-            ))}
-          </div>
 
-          <div className="mt-6 flex justify-between">
+                <div className="mt-6 flex justify-between">
             <button
               onClick={() => handlePagination(currentPage - 1)}
               disabled={currentPage <= 1}
@@ -137,6 +150,11 @@ const SurveyResponses: React.FC = () => {
               Next
             </button>
           </div>
+              </div>
+            ))}
+          </div>
+
+        
         </div>
       )}
     </div>
