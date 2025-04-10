@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { server_url } from "../../config.json";
+import Loader from "../components/Loader";
 
 type Option = {
   id: number;
@@ -45,7 +46,7 @@ const Survey = (): JSX.Element => {
         setSurvey(surveyInfo);
       } catch (error) {
         console.error("Error fetching survey:", error);
-        toast.error("Failed to load survey.");
+        // toast.error("Failed to load survey.");
       }
     };
 
@@ -156,7 +157,7 @@ const Survey = (): JSX.Element => {
   };
 
   if (!survey) {
-    return <div>Loading survey...</div>;
+    return <div  className="flex  justify-center items-center h-[80vh]"><Loader /> </div>;
   }
 
   return (

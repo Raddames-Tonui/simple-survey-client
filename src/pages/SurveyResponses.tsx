@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { server_url } from '../../config.json';
+import React, { useState, useEffect } from "react";
+import { server_url } from "../../config.json";
+import Loader from "../components/Loader";
 
 interface Certificate {
   id: number;
@@ -29,7 +30,7 @@ const SurveyResponses: React.FC = () => {
   const [responses, setResponses] = useState<QuestionResponse[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [emailFilter, setEmailFilter] = useState<string>('');
+  const [emailFilter, setEmailFilter] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -51,7 +52,9 @@ const SurveyResponses: React.FC = () => {
     }
   };
 
-  const handleEmailFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailFilterChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setEmailFilter(event.target.value);
     setCurrentPage(1); // Reset to page 1 when filter changes
   };
@@ -62,7 +65,7 @@ const SurveyResponses: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Survey Responses</h1>
+      <h1 className="text-[#0190B0] font-semibold text-xl mb-2  ">Survey Responses</h1>
 
       <div className="mb-4">
         <input
@@ -75,17 +78,29 @@ const SurveyResponses: React.FC = () => {
       </div>
 
       {loading ? (
-        <div>Loading...</div>
+       <div  className="flex  justify-center items-center h-[70vh]"><Loader /> </div>
       ) : (
         <div>
           <div className="space-y-4">
             {responses.map((response) => (
-              <div key={response.response_id} className="p-4 border border-gray-200 rounded-lg shadow-md">
+              <div
+                key={response.response_id}
+                className="p-4 border border-gray-200 rounded-lg shadow-md"
+              >
                 <h2 className="font-semibold text-xl">{response.full_name}</h2>
-                <p><strong>Email:</strong> {response.email_address}</p>
-                <p><strong>Description:</strong> {response.description}</p>
-                <p><strong>Gender:</strong> {response.gender}</p>
-                <p><strong>Programming Stack:</strong> {response.programming_stack}</p>
+                <p>
+                  <strong>Email:</strong> {response.email_address}
+                </p>
+                <p>
+                  <strong>Description:</strong> {response.description}
+                </p>
+                <p>
+                  <strong>Gender:</strong> {response.gender}
+                </p>
+                <p>
+                  <strong>Programming Stack:</strong>{" "}
+                  {response.programming_stack}
+                </p>
 
                 <div className="mt-2">
                   <strong>Certificates:</strong>
@@ -96,7 +111,9 @@ const SurveyResponses: React.FC = () => {
                   </ul>
                 </div>
 
-                <p className="mt-2"><strong>Date Responded:</strong> {response.date_responded}</p>
+                <p className="mt-2">
+                  <strong>Date Responded:</strong> {response.date_responded}
+                </p>
               </div>
             ))}
           </div>
@@ -109,7 +126,9 @@ const SurveyResponses: React.FC = () => {
             >
               Previous
             </button>
-            <span>Page {currentPage} of {totalPages}</span>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
             <button
               onClick={() => handlePagination(currentPage + 1)}
               disabled={currentPage >= totalPages}

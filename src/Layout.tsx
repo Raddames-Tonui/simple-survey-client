@@ -19,7 +19,7 @@ const Layout = (): JSX.Element => {
         }}
       />
 
-      <main className="flex-grow mx-auto min-w-full md:min-w-[80vw]  lg:min-w-[70vw]">
+      <main className="flex-grow mx-auto min-h-[90vh] min-w-full md:min-w-[80vw]  lg:min-w-[70vw]">
         <Outlet />
       </main>
       <Footer />
