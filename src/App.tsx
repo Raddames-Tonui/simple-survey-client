@@ -2,8 +2,9 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Layout from "./Layout";
 import Home from "./pages/Home";
-import About from "./pages/About";
+// import About from "./pages/About";
 import Survey from "./pages/Survey";
+import SurveyResponses from "./pages/SurveyResponses";
 
 const App = (): JSX.Element => {
   return (
@@ -11,7 +12,7 @@ const App = (): JSX.Element => {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/response" element={<SurveyResponses/>} />
           <Route path="/survey" element={<Survey />} />
         </Route>
       </Routes>
