@@ -3,16 +3,18 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Layout from "./Layout/Layout";
 import AuthLayout from "./Layout/AuthLayout";
 
+import { AuthProvider } from "./context/AuthContext";
+import { CookiesProvider } from "react-cookie";
 
-import { AuthProvider } from "./context/AuthContext"; 
+import Login from "./auth/Login";
+import SignUpForm from "./auth/SignUpForm";
 
-import { CookiesProvider } from "react-cookie"; 
+import PrivateRoute from "./components/PrivateRoute";
 
 import Home from "./pages/Home";
 import Survey from "./pages/Survey";
 import SurveyResponses from "./pages/SurveyResponses";
 import NoPage from "./pages/NoPage";
-import Login from "./auth/Login";
 
 const App = (): JSX.Element => {
   return (
@@ -22,14 +24,19 @@ const App = (): JSX.Element => {
           <Routes>
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/response" element={<SurveyResponses />} />
               <Route path="/survey" element={<Survey />} />
               <Route path="*" element={<NoPage />} />
+              {/* Protected  routes */}
+              <Route element={<PrivateRoute />}>
+                <Route path="/response" element={<SurveyResponses />} />
+              </Route>
+
             </Route>
 
             {/* Authentication Routes */}
             <Route path="/auth" element={<AuthLayout />}>
               <Route path="login" element={<Login />} />
+              <Route path="signup" element={<SignUpForm />} />
             </Route>
           </Routes>
         </AuthProvider>

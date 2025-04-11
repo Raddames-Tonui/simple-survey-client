@@ -103,7 +103,7 @@ const Login = (): JSX.Element => {
         <p className="text-center mt-6 text-gray-600 text-md">
           Not a member?{' '}
           <Link
-            to="#"
+            to="/auth/signup"
             className="text-[#24C8ED] hover:text-[#4A8A98 transition duration-300"
           >
             Sign up

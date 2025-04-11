@@ -12,12 +12,13 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => void;
+  signUp: (email: string, password: string, role: string) => void; 
   logout: () => void;
   refresh: () => void;
 }
 
 interface AuthProviderProps {
-  children: React.ReactNode;  // defines that 'children' will be passed to this component
+  children: React.ReactNode; // defines that 'children' will be passed to this component
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,7 +33,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    
     // Load user info from cookies when app starts
     const storedUser = cookies.user;
     const storedAccessToken = cookies.accessToken;
@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(parsedUser);
       } catch (e) {
         console.error("Error parsing user data from cookies:", e);
-        setUser(null); 
+        setUser(null);
       }
     }
   }, [cookies]);
@@ -113,9 +113,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setCookie("accessToken", access_token, { path: "/", httpOnly: true });
   };
 
+  // signUp function
+  const signUp = async (email: string, password: string, role: string) => {
+    const response = await fetch(`${server_url}/auth/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password, role }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      console.error("Signup failed", data.message);
+      return;
+    }
+
+    const data = await response.json();
+    const { access_token, refresh_token, user } = data;
+
+    // Set tokens and user info in cookies
+    setCookie("accessToken", access_token, { path: "/", httpOnly: true });
+    setCookie("refreshToken", refresh_token, { path: "/", httpOnly: true });
+    setCookie("user", JSON.stringify(user), { path: "/", httpOnly: false });
+
+    setUser(user);
+    navigate("/auth/login");
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, refresh }}>
-      {children} 
+    <AuthContext.Provider value={{ user, login, logout, refresh, signUp }}>
+      {children}
     </AuthContext.Provider>
   );
 };
