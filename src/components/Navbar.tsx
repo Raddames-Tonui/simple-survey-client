@@ -16,8 +16,6 @@ const Navbar = (): JSX.Element => {
           {user ? (
             <>
               <ul className="flex space-x-4 font-semibold text-md">
-
-
                 <li>
                   <Link to="/survey">Survey</Link>
                 </li>
@@ -25,6 +23,14 @@ const Navbar = (): JSX.Element => {
                   <Link to="/response">Response</Link>
                 </li>
               </ul>
+              <button className="relative w-24 h-10 rounded-3xl text-sm font-inherit border-none overflow-hidden z-10 bg-gradient-to-r from-[#0190B0] to-[#24C8ED] hover:bg-gradient-to-r hover:from-[#4A8A98]  transition-all duration-500 ring-slate-900 hover:ring-black hover:ring-2 hover:ring-[#173B3F]">
+                <span
+                  onClick={() => logout()}
+                  className="relative z-10 text-black font-semibold text-white "
+                >
+                  Logout
+                </span>
+              </button>
             </>
           ) : (
             <>
@@ -36,7 +42,6 @@ const Navbar = (): JSX.Element => {
                 <li>
                   <Link to="/survey">Survey</Link>
                 </li>
-               
               </ul>
               <button className="relative w-24 h-10 rounded-3xl text-sm font-inherit border-none overflow-hidden z-10 bg-gradient-to-r from-[#0190B0] to-[#24C8ED] hover:bg-gradient-to-r hover:from-[#4A8A98]  transition-all duration-500 ring-slate-900 hover:ring-black hover:ring-2 hover:ring-[#173B3F]">
                 <NavLink

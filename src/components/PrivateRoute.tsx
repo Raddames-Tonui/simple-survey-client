@@ -1,16 +1,22 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";  
+import { useAuth } from "../context/AuthContext";
+import Loader from "./Loader";
 
-const PrivateRoute = () => {
-  const { user } = useAuth();  
+const PrivateRoute: React.FC = () => {
+  const { user, isLoading } = useAuth();
 
-  // If no user is logged in, redirect to login page
-  if (!user) {
-    return <Navigate to="/auth/login" />;
+  // Show loader while checking auth state
+  if (isLoading) {
+    return <Loader />;
   }
 
-  // If the user is logged in, render the child routes (protected route)
+  // Redirect to login if user is not authenticated
+  if (!user) {
+    return <Navigate to="/auth/login" replace />;
+  }
+
+  // Allow access to protected route
   return <Outlet />;
 };
 
