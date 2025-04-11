@@ -4,6 +4,8 @@ import Layout from "./Layout/Layout";
 import AuthLayout from "./Layout/AuthLayout";
 
 import { AuthProvider } from "./context/AuthContext";
+import { SurveyProvider } from "./context/SurveyContext";
+
 import { CookiesProvider } from "react-cookie";
 
 import Login from "./auth/Login";
@@ -21,24 +23,23 @@ const App = (): JSX.Element => {
     <CookiesProvider>
       <Router>
         <AuthProvider>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/survey" element={<Survey />} />
-              <Route path="*" element={<NoPage />} />
-              {/* Protected  routes */}
-              <Route element={<PrivateRoute />}>
-                <Route path="/response" element={<SurveyResponses />} />
+          <SurveyProvider>
+            <Routes>
+              <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/survey" element={<Survey />} />
+                <Route path="*" element={<NoPage />} />
+                <Route element={<PrivateRoute />}>
+                  <Route path="/response" element={<SurveyResponses />} />
+                </Route>
               </Route>
 
-            </Route>
-
-            {/* Authentication Routes */}
-            <Route path="/auth" element={<AuthLayout />}>
-              <Route path="login" element={<Login />} />
-              <Route path="signup" element={<SignUpForm />} />
-            </Route>
-          </Routes>
+              <Route path="/auth" element={<AuthLayout />}>
+                <Route path="login" element={<Login />} />
+                <Route path="signup" element={<SignUpForm />} />
+              </Route>
+            </Routes>
+          </SurveyProvider>
         </AuthProvider>
       </Router>
     </CookiesProvider>

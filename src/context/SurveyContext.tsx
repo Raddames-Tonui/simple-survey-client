@@ -1,11 +1,9 @@
+// src/context/SurveyContext.tsx
 import { createContext, useContext, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import { server_url } from "../../config.json";
 
-type Option = {
-  id: number;
-  value: string;
-};
-
+type Option = { id: number; value: string };
 type Question = {
   id: number;
   name: string;
@@ -17,7 +15,6 @@ type Question = {
 };
 
 type SurveyData = {
-  id: number;
   survey_title: string;
   survey_description?: string;
   questions: Question[];
@@ -28,42 +25,55 @@ type SurveyContextType = {
   loading: boolean;
   submitSurvey: (
     answers: { [key: number]: any },
-    files: File[]
+    files: File[],
+    user_id: string,
+    survey_id: string
   ) => Promise<void>;
 };
 
-const SurveyContext = createContext<SurveyContextType | undefined>(undefined);
+const SurveyContext = createContext<SurveyContextType | null>(null);
 
 export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
   const [survey, setSurvey] = useState<SurveyData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchSurvey = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/surveys/6");
-        const data = await res.json();
-        setSurvey(data);
-      } catch (err) {
-        toast.error("Failed to load survey");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchSurvey = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${server_url}/api/questions`);
+      const data = await res.json();
+      const formattedSurvey = {
+        survey_title: data.questions[0]?.survey_title || "Survey",
+        survey_description: data.questions[0]?.survey_description || "",
+        questions: data.questions
+          .map((q: any) => q.question)
+          .sort((a: any, b: any) => a.id - b.id),
+      };
+      setSurvey(formattedSurvey);
+    } catch (err) {
+      console.error("Error fetching survey:", err);
+      toast.error("Failed to load survey.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchSurvey();
   }, []);
 
   const submitSurvey = async (
     answers: { [key: number]: any },
-    files: File[]
+    files: File[],
+    user_id: string,
+    survey_id: string
   ) => {
     const formData = new FormData();
-    formData.append("survey_id", "6");
-    formData.append("user_id", "5");
+    formData.append("survey_id", survey_id);
+    formData.append("user_id", user_id);
 
-    Object.entries(answers).forEach(([key, value]) => {
-      formData.append(`q_${key}`, value);
+    Object.keys(answers).forEach((key) => {
+      formData.append(`q_${key}`, answers[+key]);
     });
 
     files.forEach((file) => {
@@ -71,18 +81,16 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     try {
-      const response = await fetch(`http://localhost:5000/api/questions/responses`, {
+      const res = await fetch(`${server_url}/api/questions/responses`, {
         method: "PUT",
         body: formData,
       });
 
-      if (response.ok) {
-        toast.success("Survey submitted successfully");
-      } else {
-        toast.error("Failed to submit survey");
-      }
-    } catch (error) {
-      console.error("Error submitting survey:", error);
+      if (!res.ok) throw new Error("Failed to submit");
+
+      toast.success("Survey submitted successfully");
+    } catch (err) {
+      console.error("Submit error:", err);
       toast.error("Error submitting survey");
     }
   };
@@ -94,10 +102,9 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useSurvey = () => {
+export const useSurveyContext = () => {
   const context = useContext(SurveyContext);
-  if (!context) {
-    throw new Error("useSurvey must be used within a SurveyProvider");
-  }
+  if (!context)
+    throw new Error("useSurveyContext must be used within a SurveyProvider");
   return context;
 };
