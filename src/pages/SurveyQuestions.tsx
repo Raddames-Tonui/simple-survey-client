@@ -1,14 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";  // To get the survey id from the URL
 import Loader from "../components/Loader";
 import { useAuth } from "../context/AuthContext";
 import { useSurveyContext } from "../context/SurveyContext";
 
-
-const Survey = (): JSX.Element => {
-  const { survey, loading, submitSurvey } = useSurveyContext();
+const SurveyQuestions = (): JSX.Element => {
+  const { id } = useParams<{ id: string }>();  // Get the survey id from URL
+  const { survey, loading, submitSurvey, fetchSurveyQuestions } = useSurveyContext();
   const { user } = useAuth();
   const [answers, setAnswers] = useState<{ [key: number]: any }>({});
   const [files, setFiles] = useState<File[]>([]);
+
+  // Fetch the survey questions when the component is mounted
+  useEffect(() => {
+    if (id) {
+      fetchSurveyQuestions(id);  // Fetch survey questions by surveyId
+    }
+  }, [id, fetchSurveyQuestions]);
 
   const handleAnswerChange = (id: number, value: any) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -33,10 +41,9 @@ const Survey = (): JSX.Element => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const user_id = user?.id.toString() || null;
-    const survey_id = survey?.questions[0]?.survey_id?.toString() || "";
-    if (!user_id || !survey_id) return;
+    if (!user_id || !id) return;
 
-    submitSurvey(answers, files, user_id, survey_id);
+    submitSurvey(answers, files, user_id, id);  // Submit using the survey id from the URL
   };
 
   const renderInput = (question: any) => {
@@ -90,6 +97,7 @@ const Survey = (): JSX.Element => {
       ));
     }
 
+    // handle: text, email, number, url, date
     return (
       <input
         type={type}
@@ -128,13 +136,12 @@ const Survey = (): JSX.Element => {
             <div key={question.id}>
               <label className="font-semibold block mb-1">{question.text}</label>
               {question.description && (
-                <p className="text-sm text-gray-500 mt-1">
-                  {question.description}
-                </p>
+                <p className="text-sm text-gray-500 mt-1">{question.description}</p>
               )}
               {renderInput(question)}
             </div>
           ))}
+
           <button
             type="submit"
             className="bg-[#00A5CB] hover:bg-[#0190B0] py-2 px-5 text-white font-semibold w-32"
@@ -147,4 +154,4 @@ const Survey = (): JSX.Element => {
   );
 };
 
-export default Survey;
+export default SurveyQuestions;

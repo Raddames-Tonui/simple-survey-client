@@ -1,10 +1,10 @@
 import React from "react";
+import SurveyList from "./SurveyList";
 
 const Home = (): JSX.Element => {
   return (
     <div>
-      <h1>Welcome to the Home Page</h1>
-      <p>This is the homepage of your app.</p>
+    <SurveyList/>
     </div>
   );
 };
