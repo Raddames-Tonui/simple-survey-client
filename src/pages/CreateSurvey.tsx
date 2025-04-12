@@ -140,8 +140,25 @@ export default function CreateSurvey() {
     }
   };
 
+  const handleCancel = () => {
+    localStorage.removeItem("survey_draft");
+    setTitle("");
+    setDescription("");
+    setIsPublished(false);
+    setQuestions([]);
+    setNewQuestion({
+      name: "",
+      type: "text",
+      required: false,
+      text: "",
+      description: "",
+      options: [],
+    });
+    toast.success("Draft cleared");
+  };
+
   return (
-    <div className="min-h-screen bg-white my-4 md:my-6 md:border md:border-gray-300">
+    <div className="min-h-screen bg-white my-4 md:my-6 md:border  md:border-gray-300">
       <div className="py-6 md:pl-8 px-4">
         <h1 className="text-xl font-bold mb-4">Create New Survey</h1>
 
@@ -151,7 +168,7 @@ export default function CreateSurvey() {
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border border-gray-300 px-3 py-2 rounded"
           />
         </div>
 
@@ -161,7 +178,7 @@ export default function CreateSurvey() {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border border-gray-300 px-3 py-2 rounded"
           />
         </div>
 
@@ -183,7 +200,7 @@ export default function CreateSurvey() {
             onChange={(e) =>
               setNewQuestion({ ...newQuestion, name: e.target.value })
             }
-            className="border px-3 py-2 rounded"
+            className="border border-gray-300 px-3 py-2 rounded"
           />
           <input
             placeholder="Text (question prompt)"
@@ -191,14 +208,14 @@ export default function CreateSurvey() {
             onChange={(e) =>
               setNewQuestion({ ...newQuestion, text: e.target.value })
             }
-            className="border px-3 py-2 rounded"
+            className="border border-gray-300 px-3 py-2 rounded"
           />
           <select
             value={newQuestion.type}
             onChange={(e) =>
               setNewQuestion({ ...newQuestion, type: e.target.value })
             }
-            className="border px-3 py-2 rounded"
+            className="border border-gray-300 px-3 py-2 rounded"
           >
             {inputTypes.map((type) => (
               <option key={type} value={type}>
@@ -212,7 +229,7 @@ export default function CreateSurvey() {
             onChange={(e) =>
               setNewQuestion({ ...newQuestion, description: e.target.value })
             }
-            className="border px-3 py-2 rounded"
+            className="border border-gray-300 px-3 py-2 rounded"
           />
         </div>
 
@@ -235,7 +252,7 @@ export default function CreateSurvey() {
                 value={opt}
                 onChange={(e) => handleOptionChange(i, e.target.value)}
                 placeholder={`Option ${i + 1}`}
-                className="border px-3 py-1 rounded block my-1 w-full"
+                className="border border-gray-300 px-3 py-1 rounded block my-1 w-full"
               />
             ))}
             <button
@@ -259,11 +276,14 @@ export default function CreateSurvey() {
         {questions.length > 0 && (
           <div className="mb-6">
             <h3 className="text-lg font-bold mb-2">Questions Preview</h3>
+            <h4 className="text-md text-gray-600 mb-2">
+              {"  "}Drag and drop to reorder questions.
+            </h4>
             <DragDropContext onDragEnd={handleOnDragEnd}>
               <Droppable droppableId="questions">
                 {(provided) => (
                   <ul
-                    className="list-disc pl-5"
+                    className="space-y-2"
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
@@ -278,11 +298,16 @@ export default function CreateSurvey() {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
+                            className="p-4 bg-white border border-gray-300 rounded-sm shadow-sm cursor-move hover:shadow-md hover:bg-gray-100 transition-shadow"
                           >
-                            <strong>{q.text}</strong> ({q.type}){" "}
+                            <strong>{q.name}</strong> ({q.type}){" "}
                             {q.required && (
-                              <span className="text-red-500">*</span>
+                              <span className="text-red-500 font-semibold  text-md">
+                                *
+                              </span>
                             )}
+                            <p>{q.text}</p>
+                            
                           </li>
                         )}
                       </Draggable>
@@ -294,13 +319,21 @@ export default function CreateSurvey() {
             </DragDropContext>
           </div>
         )}
+        <div className="flex justify-end">
+          <button
+            onClick={handleCancel}
+            className="border border-gray-500 hover:bg-gray-400 hover:text-white py-2 px-5 mr-4 text-gray-800 font-semibold w-32"
+          >
+            Cancel
+          </button>
 
-        <button
-          onClick={submitSurvey}
-          className="bg-[#00A5CB] hover:bg-[#0190B0] py-2 px-5 text-white font-semibold w-32"
-        >
-          Submit
-        </button>
+          <button
+            onClick={submitSurvey}
+            className="bg-[#00A5CB] hover:bg-[#0190B0] py-2 px-5  text-white font-semibold w-32"
+          >
+            Submit
+          </button>
+        </div>
       </div>
     </div>
   );
