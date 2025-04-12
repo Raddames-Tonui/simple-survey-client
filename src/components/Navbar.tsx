@@ -23,17 +23,17 @@ const Navbar = (): JSX.Element => {
             <>
               <ul className="flex space-x-4 font-semibold text-md">
                 <li>
-                  <NavLink to="/create" className={linkClass}>
+                  <NavLink to="/survey/create" className={linkClass}>
                     Create
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/survey" className={linkClass}>
+                  <NavLink to="/survey/questions" className={linkClass}>
                     Survey
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/response" className={linkClass}>
+                  <NavLink to="/survey/response" className={linkClass}>
                     Response
                   </NavLink>
                 </li>
@@ -55,8 +55,13 @@ const Navbar = (): JSX.Element => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/survey" className={linkClass}>
+                  <NavLink to="/survey/list" className={linkClass}>
                     Survey
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/survey/demo" className={linkClass}>
+                    Demo
                   </NavLink>
                 </li>
               </ul>

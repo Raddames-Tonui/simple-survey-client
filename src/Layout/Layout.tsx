@@ -4,11 +4,11 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Outlet } from "react-router-dom";
 
-const Layout = (): JSX.Element => {
+const Layout = (active): JSX.Element => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-100">
       <div className="fixed top-0 left-0 w-full h-[10vh] bg-white z-50 shadow-sm">
-        <Navbar />
+        <Navbar  />
       </div>
 
       <Toaster

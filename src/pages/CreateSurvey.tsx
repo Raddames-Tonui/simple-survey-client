@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { server_url } from "../../config.json";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 interface Question {
   name: string;
@@ -9,6 +10,7 @@ interface Question {
   text: string;
   description?: string;
   options?: string[];
+  order?: number; // New: optional order field
 }
 
 export default function CreateSurvey() {
@@ -40,7 +42,16 @@ export default function CreateSurvey() {
 
   const handleAddQuestion = () => {
     if (!newQuestion.name || !newQuestion.text) return;
-    setQuestions([...questions, { ...newQuestion }]);
+
+    setQuestions([
+      ...questions,
+      {
+        ...newQuestion,
+        order: questions.length, // Assign order as the next index
+      },
+    ]);
+
+    // Reset the new question form
     setNewQuestion({
       name: "",
       type: "text",
@@ -64,6 +75,17 @@ export default function CreateSurvey() {
     });
   };
 
+  const handleOnDragEnd = (result: any) => {
+    const { destination, source } = result;
+    if (!destination) return;
+
+    const reorderedQuestions = Array.from(questions);
+    const [removed] = reorderedQuestions.splice(source.index, 1);
+    reorderedQuestions.splice(destination.index, 0, removed);
+
+    setQuestions(reorderedQuestions);
+  };
+
   const submitSurvey = async () => {
     try {
       const res = await fetch(`${server_url}/api/surveys`, {
@@ -71,12 +93,16 @@ export default function CreateSurvey() {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // 🔐 Send cookies (with JWT) to backend
+        credentials: "include",
         body: JSON.stringify({
           title,
           description,
           is_published: isPublished,
-          questions,
+          // Assign correct order before sending to backend
+          questions: questions.map((q, index) => ({
+            ...q,
+            order: index,
+          })),
         }),
       });
 
@@ -88,7 +114,7 @@ export default function CreateSurvey() {
       const data = await res.json();
       toast.success(`Survey created! ID: ${data.survey_id}`);
 
-      // Optional: reset form
+      // Clear form after submission
       setTitle("");
       setDescription("");
       setIsPublished(false);
@@ -102,6 +128,8 @@ export default function CreateSurvey() {
     <div className="min-h-screen bg-white my-4 md:my-6 md:border md:border-gray-300">
       <div className="py-6 md:pl-8 px-4">
         <h1 className="text-xl font-bold mb-4">Create New Survey</h1>
+
+        {/* Survey Title */}
         <div className="mb-4">
           <label className="block font-medium">Title</label>
           <input
@@ -110,6 +138,8 @@ export default function CreateSurvey() {
             className="w-full border px-3 py-2 rounded"
           />
         </div>
+
+        {/* Survey Description */}
         <div className="mb-4">
           <label className="block font-medium">Description</label>
           <textarea
@@ -118,40 +148,11 @@ export default function CreateSurvey() {
             className="w-full border px-3 py-2 rounded"
           />
         </div>
-        <div className="flex items-center space-x-3 my-5">
-          <label className="group flex items-center cursor-pointer">
-            <input
-              className="hidden peer"
-              type="checkbox"
-              checked={isPublished}
-              onChange={(e) => setIsPublished(e.target.checked)}
-            />
-
-            <span className="relative w-6 h-6 flex justify-center items-center bg-gray-100 border-2 border-gray-400 rounded-md shadow-md transition-all duration-500 peer-checked:border-[#00A5CB] peer-checked:bg-[#00A5CB] peer-hover:scale-105 peer-checked:hover:bg-[#0190B0]">
-              <span className="absolute inset-0 bg-gradient-to-br from-white/30 to-white/10 opacity-0 peer-checked:opacity-100 rounded-md transition-all duration-500 peer-checked:animate-pulse"></span>
-
-              <svg
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                className="hidden w-5 h-5 text-white peer-checked:block transition-transform duration-500 transform scale-50 peer-checked:scale-100"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clipRule="evenodd"
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
-                />
-              </svg>
-            </span>
-
-            <span className="ml-3 text-gray-700 group-hover:text-[#00A5CB] font-medium transition-colors duration-300">
-              Publish now?
-            </span>
-          </label>
-        </div>
 
         <hr className="mb-6" />
         <h2 className="text-xl font-semibold mb-2">Add Question</h2>
+
+        {/* Question Form */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             placeholder="Name (e.g. full_name)"
@@ -191,17 +192,8 @@ export default function CreateSurvey() {
             className="border px-3 py-2 rounded"
           />
         </div>
-        {/* <label className="inline-flex items-center my-3">
-          <input
-            type="checkbox"
-            checked={newQuestion.required}
-            onChange={(e) =>
-              setNewQuestion({ ...newQuestion, required: e.target.checked })
-            }
-            className="mr-2"
-          />
-          Required
-        </label> */}
+
+        {/* Required Toggle */}
         <div className="flex items-center space-x-3 my-5">
           <label className="group flex items-center cursor-pointer">
             <input
@@ -212,30 +204,11 @@ export default function CreateSurvey() {
                 setNewQuestion({ ...newQuestion, required: e.target.checked })
               }
             />
-
-            <span className="relative w-6 h-6 flex justify-center items-center bg-gray-100 border-2 border-gray-400 rounded-md shadow-md transition-all duration-500 peer-checked:border-[#00A5CB] peer-checked:bg-[#00A5CB] peer-hover:scale-105 peer-checked:hover:bg-[#0190B0]">
-              <span className="absolute inset-0 bg-gradient-to-br from-white/30 to-white/10 opacity-0 peer-checked:opacity-100 rounded-md transition-all duration-500 peer-checked:animate-pulse"></span>
-
-              <svg
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                className="hidden w-5 h-5 text-white peer-checked:block transition-transform duration-500 transform scale-50 peer-checked:scale-100"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clipRule="evenodd"
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
-                />
-              </svg>
-            </span>
-
-            <span className="ml-3 text-gray-700 group-hover:text-[#00A5CB] font-medium transition-colors duration-300">
-              Required
-            </span>
+            <span className="ml-3 text-gray-700 font-medium">Required</span>
           </label>
         </div>
 
+        {/* Conditional Options */}
         {(newQuestion.type === "checkbox" || newQuestion.type === "radio") && (
           <div className="mb-4">
             <p className="font-medium">Options</p>
@@ -257,28 +230,51 @@ export default function CreateSurvey() {
             </button>
           </div>
         )}
+
         <button
           onClick={handleAddQuestion}
           className="bg-green-600 text-white px-4 py-2 rounded mb-6 block"
         >
           Add Question
         </button>
+
+        {/* Preview and Drag & Drop */}
         {questions.length > 0 && (
           <div className="mb-6">
             <h3 className="text-lg font-bold mb-2">Questions Preview</h3>
-            <ul className="list-disc pl-5">
-              {questions.map((q, i) => (
-                <li key={i}>
-                  <strong>{q.text}</strong> ({q.type}){" "}
-                  {q.required && <span className="text-red-500">*</span>}
-                </li>
-              ))}
-            </ul>
+            <DragDropContext onDragEnd={handleOnDragEnd}>
+              <Droppable droppableId="questions">
+                {(provided) => (
+                  <ul
+                    className="list-disc pl-5"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {questions.map((q, i) => (
+                      <Draggable key={i} draggableId={`question-${i}`} index={i}>
+                        {(provided) => (
+                          <li
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <strong>{q.text}</strong> ({q.type}){" "}
+                            {q.required && <span className="text-red-500">*</span>}
+                          </li>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </ul>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
         )}
+
         <button
           onClick={submitSurvey}
-          className="bg-[#00A5CB] hover:bg-[#0190B0] py-2 px-5  text-white font-semibold w-32"
+          className="bg-[#00A5CB] hover:bg-[#0190B0] py-2 px-5 text-white font-semibold w-32"
         >
           Submit
         </button>
