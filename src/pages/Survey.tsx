@@ -110,7 +110,7 @@ const Survey = (): JSX.Element => {
   }
 
   return (
-    <div className="min-h-screen bg-white my-4 md:my-6 md:border md:border-gray-300">
+    <div className="min-h-screen bg-white my-10 md:my-6 md:border md:border-gray-300">
       <div className="py-6 md:pl-8 px-4">
         <div className="text-center mb-4">
           <h1 className="text-[#0190B0] font-semibold text-xl mb-2">

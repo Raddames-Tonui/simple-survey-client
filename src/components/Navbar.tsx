@@ -16,6 +16,7 @@ const Navbar = (): JSX.Element => {
             <img src="/survey-icon.webp" alt="Home" className="h-10 w-10" />
           </NavLink>
           <p className="text-lg font-bold">JazaForm</p>
+          {user? <p> Welcome {user?.name}</p> : <p>welcome{user?.name}</p>}
         </div>
 
         <div className="flex items-center justify-center space-x-4">
@@ -40,7 +41,7 @@ const Navbar = (): JSX.Element => {
               </ul>
 
               <button
-                onClick={()=>logout()}
+                onClick={() => logout()}
                 className="relative w-24 h-10 rounded-3xl text-sm font-inherit border-none overflow-hidden z-10 bg-gradient-to-r from-[#0190B0] to-[#24C8ED] hover:from-[#4A8A98] transition-all duration-500 ring-slate-900 hover:ring-2 hover:ring-[#173B3F] font-semibold text-white"
               >
                 Logout

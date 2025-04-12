@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { server_url } from "../../config.json";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import Checkbox from "../components/Checkbox";
+import { useAuth } from "../context/AuthContext"; // Import useAuth hook
 
 interface Question {
   name: string;
@@ -10,15 +13,15 @@ interface Question {
   text: string;
   description?: string;
   options?: string[];
-  order?: number; // New: optional order field
+  order?: number;
 }
 
 export default function CreateSurvey() {
+  const { user, logout, isLoading } = useAuth(); // Access user and loading state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
-
   const [newQuestion, setNewQuestion] = useState<Question>({
     name: "",
     type: "text",
@@ -27,6 +30,7 @@ export default function CreateSurvey() {
     description: "",
     options: [],
   });
+  const navigate = useNavigate();
 
   const inputTypes = [
     "text",
@@ -39,6 +43,14 @@ export default function CreateSurvey() {
     "date",
     "file",
   ];
+
+  // Redirect to login if no user is authenticated
+  useEffect(() => {
+    if (!user && !isLoading) {
+      toast.error("You must be logged in to create a survey");
+      navigate("/login");
+    }
+  }, [user, isLoading, navigate]);
 
   const handleAddQuestion = () => {
     if (!newQuestion.name || !newQuestion.text) return;
@@ -88,22 +100,26 @@ export default function CreateSurvey() {
 
   const submitSurvey = async () => {
     try {
+      const surveyData = {
+        title,
+        description,
+        is_published: isPublished,
+        questions: questions.map((q, index) => ({
+          ...q,
+          order: index,
+        })),
+      };
+
+      // Log the data that will be submitted
+      console.log("Submitting survey data:", surveyData);
+
       const res = await fetch(`${server_url}/api/surveys`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
-        body: JSON.stringify({
-          title,
-          description,
-          is_published: isPublished,
-          // Assign correct order before sending to backend
-          questions: questions.map((q, index) => ({
-            ...q,
-            order: index,
-          })),
-        }),
+        body: JSON.stringify(surveyData),
       });
 
       if (!res.ok) {
@@ -149,6 +165,13 @@ export default function CreateSurvey() {
           />
         </div>
 
+        {/* Publish Checkbox - Using the Checkbox component */}
+        <Checkbox
+          checked={isPublished}
+          onChange={setIsPublished}
+          label="Publish now?"
+        />
+
         <hr className="mb-6" />
         <h2 className="text-xl font-semibold mb-2">Add Question</h2>
 
@@ -193,20 +216,14 @@ export default function CreateSurvey() {
           />
         </div>
 
-        {/* Required Toggle */}
-        <div className="flex items-center space-x-3 my-5">
-          <label className="group flex items-center cursor-pointer">
-            <input
-              className="hidden peer"
-              type="checkbox"
-              checked={newQuestion.required}
-              onChange={(e) =>
-                setNewQuestion({ ...newQuestion, required: e.target.checked })
-              }
-            />
-            <span className="ml-3 text-gray-700 font-medium">Required</span>
-          </label>
-        </div>
+        {/* Required Checkbox - Using the Checkbox component */}
+        <Checkbox
+          checked={newQuestion.required}
+          onChange={(checked) =>
+            setNewQuestion({ ...newQuestion, required: checked })
+          }
+          label="Required"
+        />
 
         {/* Conditional Options */}
         {(newQuestion.type === "checkbox" || newQuestion.type === "radio") && (
@@ -251,7 +268,11 @@ export default function CreateSurvey() {
                     {...provided.droppableProps}
                   >
                     {questions.map((q, i) => (
-                      <Draggable key={i} draggableId={`question-${i}`} index={i}>
+                      <Draggable
+                        key={i}
+                        draggableId={`question-${i}`}
+                        index={i}
+                      >
                         {(provided) => (
                           <li
                             ref={provided.innerRef}
@@ -259,7 +280,9 @@ export default function CreateSurvey() {
                             {...provided.dragHandleProps}
                           >
                             <strong>{q.text}</strong> ({q.type}){" "}
-                            {q.required && <span className="text-red-500">*</span>}
+                            {q.required && (
+                              <span className="text-red-500">*</span>
+                            )}
                           </li>
                         )}
                       </Draggable>

@@ -12,9 +12,10 @@ const AuthLayout = (): JSX.Element => {
         toastOptions={{
           style: {
             zIndex: 100,
-            top: "12vh",
+            top: "1vh",
           },
         }}
+        containerClassName="mt-[8vh]"
       />
 
       <main className="flex-grow  mx-auto max-h-screen min-w-full md:min-w-[80vw] lg:min-w-[70vw]">
