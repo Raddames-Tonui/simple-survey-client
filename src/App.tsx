@@ -29,9 +29,11 @@ const App = (): JSX.Element => {
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
-                {/* <Route path="/list" element={<SurveyList />}></Route> */}
                 <Route path="/survey" element={<Survey />} />
-                <Route path="/survey/:id/questions" element={<SurveyQuestions />} />
+                <Route
+                  path="/survey/:id/questions"
+                  element={<SurveyQuestions />}
+                />
                 <Route path="*" element={<NoPage />} />
                 <Route element={<PrivateRoute />}>
                   <Route path="/create" element={<CreateSurvey />} />

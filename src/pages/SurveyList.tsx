@@ -69,7 +69,7 @@ const SurveyList = (): JSX.Element => {
   ];
 
   return (
-    <div className="mt-10 grid md:grid-cols-3 gap-6">
+    <div className="mt-10 grid md:grid-cols-3 gap-6 ">
       {surveys.map((survey, index) => (
         <div
           key={survey.id}
@@ -82,22 +82,42 @@ const SurveyList = (): JSX.Element => {
           />
           <div className="p-4">
             <h2 className="text-lg font-semibold mb-1">{survey.title}</h2>
-            <p className="text-sm text-gray-600 mb-2">{survey.description}</p>
+            {survey.description.length > 100 ? (
+              <p className="text-sm text-gray-600 mb-2">
+                {survey.description.slice(0, 100)}...
+                <span className="text-blue-600 cursor-pointer ml-1 hover:underline">
+                  Read more
+                </span>
+              </p>
+            ) : (
+              <p className="text-sm text-gray-600 mb-2">{survey.description}</p>
+            )}
             <p className="text-xs text-gray-400 mb-1">
               Created: {new Date(survey.date_created).toLocaleDateString()}
             </p>
-            <span
-              className={`text-xs font-semibold ${
-                survey.is_published ? "text-green-600" : "text-red-500"
-              }`}
-            >
-              {survey.is_published ? "Active" : "Inactive"}
-            </span>
-            <Link to={`/survey/${survey.id}/questions/`}>
-              <button className="mt-3 px-4 py-2 bg-[#0190B0] text-white text-sm rounded hover:bg-[#017a95] transition">
-                Start Survey
-              </button>
-            </Link>
+            <div className="flex justify-between items-center">
+              <span
+                className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                  survey.is_published
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-600"
+                }`}
+              >
+                {survey.is_published ? "Active" : "Closed"}
+              </span>
+
+              {survey.is_published ? (
+                <Link to={`/survey/${survey.id}/questions/`}>
+                  <button className="px-4 py-2 bg-[#0190B0] text-white text-sm rounded hover:bg-[#017a95] transition">
+                    Start Survey
+                  </button>
+                </Link>
+              ) : (
+                <span className="text-sm text-gray-500 italic">
+                  Not Available
+                </span>
+              )}
+            </div>
           </div>
         </div>
       ))}
