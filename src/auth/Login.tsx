@@ -34,8 +34,7 @@ const Login = (): JSX.Element => {
         <h2 className="mt-3 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to your account
         </h2>
-        {error && <p className="text-red-500 text-center mt-4">{error}</p>}{" "}
-        {/* Display error message */}
+       
         <form className="space-y-6 mt-8 w-full" onSubmit={handleSubmit}>
           <div>
             <label
@@ -103,7 +102,7 @@ const Login = (): JSX.Element => {
         <p className="text-center mt-6 text-gray-600 text-md">
           Not a member?{' '}
           <Link
-            to="#"
+            to="/auth/signup"
             className="text-[#24C8ED] hover:text-[#4A8A98 transition duration-300"
           >
             Sign up

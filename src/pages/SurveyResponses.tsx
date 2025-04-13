@@ -4,6 +4,7 @@ import Loader from "../components/Loader";
 import { FaDownload, FaEye  } from "react-icons/fa";
 
 
+
 interface Certificate {
   id: number;
   file_url: string;
@@ -119,12 +120,12 @@ const SurveyResponses: React.FC = () => {
                         >
                           <FaEye className="w-5 h-5 text-blue-600 hover:text-blue-800" />
                         </a>
-                        <a
+                        <button
                           href={`${server_url}/api/questions/responses/certificates/${cert.id}`}
                           download={cert.file_name}
                         >
                           <FaDownload className="w-5 h-5 text-green-600 hover:text-green-800" />
-                        </a>
+                        </button>
                       </li>
                     ))}
                   </ul>
