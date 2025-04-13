@@ -54,7 +54,7 @@ const ActiveSurveyList = (): JSX.Element => {
 
   if (surveys.length === 0) {
     return (
-      <div className="flex justify-center items-center h-[40vh]">
+      <div className="flex justify-center items-center h-[40vh] mb-10">
         <p className="text-[#0190B0] font-semibold text-lg">
           There is currently no active survey available at the moment.
         </p>
@@ -72,11 +72,11 @@ const ActiveSurveyList = (): JSX.Element => {
   ];
 
   return (
-    <div className="mt-10 grid md:grid-cols-3 gap-6">
+    <div className="my-10 grid md:grid-cols-3 gap-6 ">
       {surveys.map((survey, index) => (
         <div
           key={survey.id}
-          className="rounded-xl overflow-hidden shadow-md border border-gray-200 bg-white"
+          className="lg:rounded-xl overflow-hidden shadow-md border border-gray-200 bg-white"
         >
           <img
             src={surveyImages[index % surveyImages.length]}

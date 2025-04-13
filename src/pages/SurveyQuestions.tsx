@@ -1,22 +1,24 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";  // To get the survey id from the URL
+import { useParams } from "react-router-dom"; // To get the survey id from the URL
 import Loader from "../components/Loader";
 import { useAuth } from "../context/AuthContext";
 import { useSurveyContext } from "../context/SurveyContext";
 
 const SurveyQuestions = (): JSX.Element => {
-  const { id } = useParams<{ id: string }>();  // Get the survey id from URL
+  const { id } = useParams<{ id: string }>(); // Get the survey id from URL
   const { survey, loading, submitSurvey, fetchSurveyQuestions } = useSurveyContext();
   const { user } = useAuth();
   const [answers, setAnswers] = useState<{ [key: number]: any }>({});
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<{ [key: number]: File[] }>({});
 
   // Fetch the survey questions when the component is mounted
   useEffect(() => {
     if (id) {
-      fetchSurveyQuestions(id);  // Fetch survey questions by surveyId
+      fetchSurveyQuestions(id); // Fetch survey questions by surveyId
     }
   }, [id, fetchSurveyQuestions]);
+
+  console.log(survey)
 
   const handleAnswerChange = (id: number, value: any) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -32,9 +34,12 @@ const SurveyQuestions = (): JSX.Element => {
     });
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (id: number, event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setFiles(Array.from(event.target.files));
+      setFiles((prev) => ({
+        ...prev,
+        [id]: Array.from(event.target.files),
+      }));
     }
   };
 
@@ -43,7 +48,7 @@ const SurveyQuestions = (): JSX.Element => {
     const user_id = user?.id.toString() || null;
     if (!user_id || !id) return;
 
-    submitSurvey(answers, files, user_id, id);  // Submit using the survey id from the URL
+    submitSurvey(answers, files, user_id, id); // Submit using the survey id from the URL
   };
 
   const renderInput = (question: any) => {
@@ -67,7 +72,7 @@ const SurveyQuestions = (): JSX.Element => {
           required={required}
           multiple
           accept=".pdf"
-          onChange={handleFileChange}
+          onChange={(e) => handleFileChange(id, e)}
           className="block mt-2"
         />
       );

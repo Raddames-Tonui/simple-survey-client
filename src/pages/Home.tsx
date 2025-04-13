@@ -6,7 +6,9 @@ const Home = (): JSX.Element => {
   return (
     <div className="min-h-screen ">
       <HeroSection />
-      <ActiveSurveyList />
+      <div className="">
+        <ActiveSurveyList />
+      </div>
     </div>
   );
 };
