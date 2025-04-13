@@ -1,92 +1,140 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { server_url } from "../../config.json";
 import Loader from "../components/Loader";
 import toast from "react-hot-toast";
+import { server_url } from "../../config.json";
 
-// User type
+// Define User type
 interface User {
   id: string;
   email: string;
   role: string;
 }
 
-// Context type
+// Define Context type
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => void;
-  signUp: (email: string, password: string, role: string) => void;
-  logout: () => void;
-  refresh: () => void;
+  login: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, role: string) => Promise<void>;
+  logout: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
-// Props type for provider
+// Props type for Provider
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-// Create auth context
+// Create Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// AuthProvider: Wraps the app with auth state
+// Provider Component
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [cookies, setCookie, removeCookie] = useCookies(["accessToken", "refreshToken", "user"]);
+  const [cookies, setCookie, removeCookie] = useCookies([
+    "accessToken",
+    "refreshToken",
+    "user",
+  ]);
   const navigate = useNavigate();
 
-  // Check cookies and restore session on load
   useEffect(() => {
     const storedUser = cookies.user;
     const storedAccessToken = cookies.accessToken;
+    // console.log("Stored access token:", storedAccessToken); 
 
     if (storedUser && storedAccessToken) {
       try {
-        const parsedUser = typeof storedUser === "string" ? JSON.parse(storedUser) : storedUser;
-        setUser(parsedUser); // Successfully set user after cookie parsing
-      } catch (e) {
-        console.error("Error parsing user from cookies:", e);
-        setUser(null); // Clear user if parsing fails
+        const parsedUser =
+          typeof storedUser === "string" ? JSON.parse(storedUser) : storedUser;
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Failed to parse user cookie:", error);
+        setUser(null);
       }
     }
-    setIsLoading(false); // Set isLoading false after cookie processing is complete
-  }, [cookies]); // Triggered whenever cookies change
 
+    setIsLoading(false);
+  }, [cookies]);
 
-  // login(): Authenticates and stores tokens
+  // Login
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch(`${server_url}/auth/login`, {
+      const res = await fetch(`${server_url}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Login failed");
+      }
 
-      if (!response.ok) {
-        console.error("Login failed:", data.message);
-        toast.error(data.message || "Login failed");
+      const { access_token, refresh_token, user } = await res.json();
+
+      setCookie("accessToken", access_token, {
+        path: "/",
+        secure: true,
+        sameSite: "None",
+      });
+      setCookie("refreshToken", refresh_token, {
+        path: "/",
+        secure: true,
+        sameSite: "None",
+      });
+      setCookie("user", JSON.stringify(user), {
+        path: "/",
+        secure: true,
+        sameSite: "None",
+      });
+
+      setUser(user);
+      navigate("/survey/create");
+    } catch (error: any) {
+      toast.error(error.message || "Login error");
+      console.error("Login error:", error);
+    }
+  };
+
+  // Sign Up
+  const signUp = async (name: string, email: string, password: string) => {
+    try {
+      const res = await fetch(`${server_url}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Signup failed");
         return;
       }
 
       const { access_token, refresh_token, user } = data;
 
+      // Set cookies
       setCookie("accessToken", access_token, { path: "/" });
       setCookie("refreshToken", refresh_token, { path: "/" });
       setCookie("user", JSON.stringify(user), { path: "/" });
 
       setUser(user);
-      navigate("/response");
-    } catch (error) {
-      console.error("Login error:", error);
-      toast.error("Login failed");
+      toast.success("Signup successful");
+
+      // Trigger auto-login
+      await login(email, password);
+    } catch (err) {
+      console.error("Signup error:", err);
+      toast.error("Signup failed");
     }
   };
 
-  // logout(): Logs out and clears cookies
+  // Logout
   const logout = async () => {
     try {
       const res = await fetch(`${server_url}/auth/logout`, {
@@ -96,9 +144,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (res.ok) {
-        toast.success("Logout successful");
+        toast.success("Logged out");
       } else {
-        console.error("Backend logout failed");
+        console.warn("Backend logout failed");
       }
     } catch (error) {
       console.error("Logout error:", error);
@@ -111,21 +159,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // refresh(): Gets a new access token using refresh token
+  // Refresh Token
   const refresh = async () => {
     try {
-      const response = await fetch(`${server_url}/auth/token/refresh`, {
+      const res = await fetch(`${server_url}/auth/token/refresh`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",  // Ensures cookies are sent with the request
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) {
-        console.error("Token refresh failed:", data.message);
+      if (!res.ok) {
+        console.error("Refresh failed:", data.message);
         logout();
         return;
       }
@@ -138,47 +184,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // signUp(): Registers a new user and logs them in
-  const signUp = async (email: string, password: string, role: string) => {
-    try {
-      const response = await fetch(`${server_url}/auth/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error("Signup failed:", data.message);
-        toast.error(data.message || "Signup failed");
-        return;
-      }
-
-      const { access_token, refresh_token, user } = data;
-
-      setCookie("accessToken", access_token, { path: "/" });
-      setCookie("refreshToken", refresh_token, { path: "/" });
-      setCookie("user", JSON.stringify(user), { path: "/" });
-
-      setUser(user);
-      toast.success("Signup successful");
-      navigate("/response");
-    } catch (err) {
-      console.error("Signup error:", err);
-      toast.error("Signup failed");
-    }
-  };
-
-  // Provide auth context value
   return (
-    <AuthContext.Provider value={{ user, login, logout, refresh, signUp, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, login, signUp, logout, refresh }}
+    >
       {!isLoading ? children : <Loader />}
     </AuthContext.Provider>
   );
 };
 
-// useAuth(): Custom hook to access auth context
+// Custom hook
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {

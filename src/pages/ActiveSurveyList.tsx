@@ -54,8 +54,10 @@ const ActiveSurveyList = (): JSX.Element => {
 
   if (surveys.length === 0) {
     return (
-      <div className="flex justify-center items-center h-[80vh]">
-        <p>No active surveys found.</p>
+      <div className="flex justify-center items-center h-[40vh]">
+        <p className="text-[#0190B0] font-semibold text-lg">
+          There is currently no active survey available at the moment.
+        </p>
       </div>
     );
   }

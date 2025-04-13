@@ -132,15 +132,17 @@ const SurveyQuestions = (): JSX.Element => {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-y-6">
-          {survey.questions.map((question) => (
-            <div key={question.id}>
-              <label className="font-semibold block mb-1">{question.text}</label>
-              {question.description && (
-                <p className="text-sm text-gray-500 mt-1">{question.description}</p>
-              )}
-              {renderInput(question)}
-            </div>
-          ))}
+          {[...survey.questions]
+            .sort((a, b) => a.order - b.order)
+            .map((question) => (
+              <div key={question.id}>
+                <label className="font-semibold block mb-1">{question.text}</label>
+                {question.description && (
+                  <p className="text-sm text-gray-500 mt-1">{question.description}</p>
+                )}
+                {renderInput(question)}
+              </div>
+            ))}
 
           <button
             type="submit"

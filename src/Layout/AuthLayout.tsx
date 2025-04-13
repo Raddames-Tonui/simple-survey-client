@@ -1,6 +1,5 @@
 import React from "react";
 import { Toaster } from "react-hot-toast";
-import Footer from "../components/Footer";
 import { Outlet } from "react-router-dom";
 
 const AuthLayout = (): JSX.Element => {

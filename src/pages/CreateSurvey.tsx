@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import { server_url } from "../../config.json";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Checkbox from "../components/Checkbox";
-import { useAuth } from "../context/AuthContext"; // Import useAuth hook
+import { useAuth } from "../context/AuthContext";
+import { useCookies } from "react-cookie";
 
 interface Question {
   name: string;
@@ -17,7 +17,7 @@ interface Question {
 }
 
 export default function CreateSurvey() {
-  const { user, logout, isLoading } = useAuth(); // Access user and loading state
+  const { user, isLoading } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isPublished, setIsPublished] = useState(false);
@@ -30,7 +30,10 @@ export default function CreateSurvey() {
     description: "",
     options: [],
   });
-  const navigate = useNavigate();
+
+  const [cookies] = useCookies(["accessToken"]);
+  const token = cookies.accessToken;
+  // console.log(token)
 
   const inputTypes = [
     "text",
@@ -44,14 +47,6 @@ export default function CreateSurvey() {
     "file",
   ];
 
-  // Redirect to login if no user is authenticated
-  useEffect(() => {
-    if (!user && !isLoading) {
-      toast.error("You must be logged in to create a survey");
-      navigate("/login");
-    }
-  }, [user, isLoading, navigate]);
-
   const handleAddQuestion = () => {
     if (!newQuestion.name || !newQuestion.text) return;
 
@@ -59,11 +54,10 @@ export default function CreateSurvey() {
       ...questions,
       {
         ...newQuestion,
-        order: questions.length, // Assign order as the next index
+        order: questions.length,
       },
     ]);
 
-    // Reset the new question form
     setNewQuestion({
       name: "",
       type: "text",
@@ -100,6 +94,11 @@ export default function CreateSurvey() {
 
   const submitSurvey = async () => {
     try {
+      if (!token) {
+        toast.error("You must be logged in to submit a survey");
+        return;
+      }
+
       const surveyData = {
         title,
         description,
@@ -110,14 +109,11 @@ export default function CreateSurvey() {
         })),
       };
 
-      // Log the data that will be submitted
-      console.log("Submitting survey data:", surveyData);
-
       const res = await fetch(`${server_url}/api/surveys`, {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(surveyData),
       });
@@ -128,9 +124,8 @@ export default function CreateSurvey() {
       }
 
       const data = await res.json();
-      toast.success(`Survey created! ID: ${data.survey_id}`);
+      toast.success(`Survey created`);
 
-      // Clear form after submission
       setTitle("");
       setDescription("");
       setIsPublished(false);
@@ -157,12 +152,13 @@ export default function CreateSurvey() {
     toast.success("Draft cleared");
   };
 
+  if (isLoading) return <div>Loading...</div>;
+
   return (
-    <div className="min-h-screen bg-white my-4 md:my-6 md:border  md:border-gray-300">
+    <div className="min-h-screen bg-white my-4 md:my-6 md:border md:border-gray-300">
       <div className="py-6 md:pl-8 px-4">
         <h1 className="text-xl font-bold mb-4">Create New Survey</h1>
 
-        {/* Survey Title */}
         <div className="mb-4">
           <label className="block font-medium">Title</label>
           <input
@@ -172,7 +168,6 @@ export default function CreateSurvey() {
           />
         </div>
 
-        {/* Survey Description */}
         <div className="mb-4">
           <label className="block font-medium">Description</label>
           <textarea
@@ -182,7 +177,6 @@ export default function CreateSurvey() {
           />
         </div>
 
-        {/* Publish Checkbox - Using the Checkbox component */}
         <Checkbox
           checked={isPublished}
           onChange={setIsPublished}
@@ -192,7 +186,6 @@ export default function CreateSurvey() {
         <hr className="mb-6" />
         <h2 className="text-xl font-semibold mb-2">Add Question</h2>
 
-        {/* Question Form */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             placeholder="Name (e.g. full_name)"
@@ -233,7 +226,6 @@ export default function CreateSurvey() {
           />
         </div>
 
-        {/* Required Checkbox - Using the Checkbox component */}
         <Checkbox
           checked={newQuestion.required}
           onChange={(checked) =>
@@ -242,7 +234,6 @@ export default function CreateSurvey() {
           label="Required"
         />
 
-        {/* Conditional Options */}
         {(newQuestion.type === "checkbox" || newQuestion.type === "radio") && (
           <div className="mb-4">
             <p className="font-medium">Options</p>
@@ -272,12 +263,11 @@ export default function CreateSurvey() {
           Add Question
         </button>
 
-        {/* Preview and Drag & Drop */}
         {questions.length > 0 && (
           <div className="mb-6">
             <h3 className="text-lg font-bold mb-2">Questions Preview</h3>
             <h4 className="text-md text-gray-600 mb-2">
-              {"  "}Drag and drop to reorder questions.
+              Drag and drop to reorder questions.
             </h4>
             <DragDropContext onDragEnd={handleOnDragEnd}>
               <Droppable droppableId="questions">
@@ -302,12 +292,11 @@ export default function CreateSurvey() {
                           >
                             <strong>{q.name}</strong> ({q.type}){" "}
                             {q.required && (
-                              <span className="text-red-500 font-semibold  text-md">
+                              <span className="text-red-500 font-semibold text-md">
                                 *
                               </span>
                             )}
                             <p>{q.text}</p>
-                            
                           </li>
                         )}
                       </Draggable>
@@ -329,7 +318,7 @@ export default function CreateSurvey() {
 
           <button
             onClick={submitSurvey}
-            className="bg-[#00A5CB] hover:bg-[#0190B0] py-2 px-5  text-white font-semibold w-32"
+            className="bg-[#00A5CB] hover:bg-[#0190B0] py-2 px-5 text-white font-semibold w-32"
           >
             Submit
           </button>

@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
 import { server_url } from "../../config.json";
 import Loader from "../components/Loader";
 import { Link } from "react-router-dom";
 
-// Define the Survey type based on the data you expect from the API
 type Survey = {
   id: number;
   title: string;
@@ -29,10 +27,9 @@ const SurveyList = (): JSX.Element => {
       if (response.ok) {
         setSurveys(data.surveys);
       } else {
-        toast.error(data.message || "Failed to fetch surveys.");
+        console.error(data.message || "Failed to fetch surveys.");
       }
     } catch (error) {
-      toast.error("An error occurred while fetching surveys.");
       console.error("Error fetching surveys:", error);
     } finally {
       setLoading(false);
@@ -54,7 +51,9 @@ const SurveyList = (): JSX.Element => {
   if (surveys.length === 0) {
     return (
       <div className="flex justify-center items-center h-[80vh]">
-        <p>No surveys found.</p>
+        <p className="text-[#0190B0] font-semibold text-lg">
+          There is currently no active survey available at the moment.
+        </p>
       </div>
     );
   }

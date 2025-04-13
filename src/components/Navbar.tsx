@@ -16,7 +16,7 @@ const Navbar = (): JSX.Element => {
             <img src="/survey-icon.webp" alt="Home" className="h-10 w-10" />
           </NavLink>
           <p className="text-lg font-bold">JazaForm</p>
-          {user? <p> Welcome {user?.name}</p> : <p>welcome{user?.name}</p>}
+          {user? <p> Welcome {user?.name}</p> : ""}
         </div>
 
         <div className="flex items-center justify-center space-x-4">
