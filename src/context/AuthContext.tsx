@@ -124,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setCookie("user", JSON.stringify(user), { path: "/" });
 
       setUser(user);
-      toast.success("Signup successful");
+      toast.success("Success! You’re Now Registered");
 
       // Trigger auto-login
       await login(email, password);
@@ -144,7 +144,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (res.ok) {
-        toast.success("Logged out");
+        toast.success("See you soon! 👋");
       } else {
         console.warn("Backend logout failed");
       }

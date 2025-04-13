@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; // To get the survey id from the URL
 import Loader from "../components/Loader";
-import { useAuth } from "../context/AuthContext";
 import { useSurveyContext } from "../context/SurveyContext";
 
 const SurveyQuestions = (): JSX.Element => {
   const { id } = useParams<{ id: string }>(); // Get the survey id from URL
-  const { survey, loading, submitSurvey, fetchSurveyQuestions } = useSurveyContext();
-  const { user } = useAuth();
+  const { survey, loading, submitSurvey, fetchSurveyQuestions } =
+    useSurveyContext();
   const [answers, setAnswers] = useState<{ [key: number]: any }>({});
   const [files, setFiles] = useState<{ [key: number]: File[] }>({});
 
@@ -18,7 +17,7 @@ const SurveyQuestions = (): JSX.Element => {
     }
   }, [id, fetchSurveyQuestions]);
 
-  console.log(survey)
+  // console.log(survey)
 
   const handleAnswerChange = (id: number, value: any) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -34,7 +33,10 @@ const SurveyQuestions = (): JSX.Element => {
     });
   };
 
-  const handleFileChange = (id: number, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (
+    id: number,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files) {
       setFiles((prev) => ({
         ...prev,
@@ -45,10 +47,13 @@ const SurveyQuestions = (): JSX.Element => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const user_id = user?.id.toString() || null;
-    if (!user_id || !id) return;
 
-    submitSurvey(answers, files, user_id, id); // Submit using the survey id from the URL
+    // Flatten the files object into an array
+    //  Object.values(files) gets the values (which are arrays of files) from the files object.
+    // .flat() flattens the nested arrays into a single array, so submitSurvey receives a proper array of files.
+    const flattenedFiles = Object.values(files).flat();
+
+    submitSurvey(answers, flattenedFiles, id); // passing flattened files as an array
   };
 
   const renderInput = (question: any) => {
@@ -141,9 +146,13 @@ const SurveyQuestions = (): JSX.Element => {
             .sort((a, b) => a.order - b.order)
             .map((question) => (
               <div key={question.id}>
-                <label className="font-semibold block mb-1">{question.text}</label>
+                <label className="font-semibold block mb-1">
+                  {question.text}
+                </label>
                 {question.description && (
-                  <p className="text-sm text-gray-500 mt-1">{question.description}</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {question.description}
+                  </p>
                 )}
                 {renderInput(question)}
               </div>
