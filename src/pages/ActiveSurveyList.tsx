@@ -72,7 +72,7 @@ const ActiveSurveyList = (): JSX.Element => {
   ];
 
   return (
-    <div className="my-10 grid md:grid-cols-3 gap-6 ">
+    <div className="my-10 grid md:grid-cols-3 gap-6 md:w-[80vw] lg:w-[70vw] ">
       {surveys.map((survey, index) => (
         <div
           key={survey.id}
