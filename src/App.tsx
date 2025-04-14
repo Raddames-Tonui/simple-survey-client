@@ -18,13 +18,11 @@ import Survey from "./pages/Survey";
 import SurveyResponses from "./pages/SurveyResponses";
 import NoPage from "./pages/NoPage";
 import CreateSurvey from "./pages/CreateSurvey";
-// import SurveyQuestions from "./pages/SurveyQuestions";
 import SurveyList from "./pages/SurveyList";
 import SurveyForm from "./pages/SurveyForm";
+import UserSurveyList from "./pages/UserSurveyList";
 
 const App = (): JSX.Element => {
-
-  
   return (
     <CookiesProvider>
       <Router>
@@ -35,24 +33,16 @@ const App = (): JSX.Element => {
                 <Route path="/" element={<Home />} />
                 <Route path="/survey/demo" element={<Survey />} />
                 <Route path="/survey/list" element={<SurveyList />} />
-
-                {/* <Route
-                  path="/survey/:id/questions"
-                  element={<SurveyQuestions />}
-                /> */}
-                <Route
-                  path="/survey/:id/questions"
-                  element={<SurveyForm />}
-                />
+                <Route path="/survey/:id/questions" element={<SurveyForm />} />
                 <Route path="*" element={<NoPage />} />
                 <Route element={<PrivateRoute />}>
                   <Route path="/survey/create" element={<CreateSurvey />} />
+                  <Route path="/survey/user-surveys" element={<UserSurveyList/>}/>
                   <Route
                     path="/survey/response"
                     element={<SurveyResponses />}
                   />
                 </Route>
-
               </Route>
 
               <Route path="/auth" element={<AuthLayout />}>

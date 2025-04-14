@@ -29,7 +29,7 @@ const Navbar = (): JSX.Element => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/survey/questions" className={linkClass}>
+                  <NavLink to="/survey/user-surveys" className={linkClass}>
                     Survey
                   </NavLink>
                 </li>
