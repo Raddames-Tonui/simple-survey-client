@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const messages = [
-  "Your response has been submitted.",
-  "Thanks a bunch! We’ve got your answers.",
+  "Cheers to you!",
+  "You are the Best.",
   "You're awesome – survey completed!",
-  "That was super helpful, thank you!",
-  "We appreciate your input!",
+  "This is super helpful!",
+  "We really appreciate your input!",
   "Thanks for sharing your thoughts with us!",
   "Your feedback helps us grow!",
   "High five! 🎉 Your response was received.",
-  "Thanks, you made our day!",
-  "Submission successful – you rock!",
+  "Yaay! You made our day!",
+  "Your submission really means a lot to us.",
 ];
 
 type ThankYouModalProps = {

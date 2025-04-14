@@ -30,10 +30,10 @@ const ActiveSurveyList = (): JSX.Element => {
         );
         setSurveys(publishedSurveys.slice(0, 3));
       } else {
-        toast.error(data.message || "Failed to fetch surveys.");
+        console.error("Error fetching surveys:", error);
+        // toast.error(data.message || "Failed to fetch surveys.");
       }
     } catch (error) {
-      toast.error("An error occurred while fetching surveys.");
       console.error("Error fetching surveys:", error);
     } finally {
       setLoading(false);
@@ -56,7 +56,7 @@ const ActiveSurveyList = (): JSX.Element => {
     return (
       <div className="flex justify-center items-center h-[40vh] mb-10">
         <p className="text-[#0190B0] font-semibold text-lg">
-          There is currently no active survey available at the moment.
+          There is  no active survey available currently.
         </p>
       </div>
     );

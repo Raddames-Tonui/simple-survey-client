@@ -5,13 +5,15 @@ interface QuestionProps {
   answer: any;
   onAnswerChange: (id: number, value: any) => void;
   onFileChange?: (id: number, files: FileList | null) => void;
+  fileErrors?: { [id: number]: string };
 }
 
-const QuestionProps: FC<QuestionProps> = ({
+const QuestionComponent: FC<QuestionProps> = ({
   question,
   answer,
   onAnswerChange,
   onFileChange,
+  fileErrors,
 }) => {
   const { id, type, required, options, text, description } = question;
 
@@ -53,14 +55,19 @@ const QuestionProps: FC<QuestionProps> = ({
 
       case "file":
         return (
-          <input
-            type="file"
-            required={required}
-            multiple
-            accept=".pdf"
-            onChange={handleFileInput}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
+          <>
+            <input
+              type="file"
+              required={required}
+              multiple
+              accept=".pdf"
+              onChange={handleFileInput}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            {type === "file" && fileErrors?.[id] && (
+              <p className="text-red-600 text-sm mt-2">{fileErrors[id]}</p>
+            )}
+          </>
         );
 
       case "radio":
@@ -155,9 +162,10 @@ const QuestionProps: FC<QuestionProps> = ({
       {description && (
         <p className="text-gray-500 text-sm mb-2">{description}</p>
       )}
+
       {renderInput()}
     </div>
   );
 };
 
-export default QuestionProps;
+export default QuestionComponent;

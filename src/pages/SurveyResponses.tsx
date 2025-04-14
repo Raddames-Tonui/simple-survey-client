@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { server_url } from "../../config.json";
 import Loader from "../components/Loader";
 import { FaDownload, FaEye } from "react-icons/fa";
+import { useCookies } from "react-cookie";
 
 interface Certificate {
   id: number;
@@ -9,15 +10,15 @@ interface Certificate {
   file_name: string;
 }
 
-interface QuestionResponse {
-  [key: string]: any;
+interface SurveyResponse {
   response_id: number;
   certificates: Certificate[];
   date_responded: string;
+  [key: string]: any;
 }
 
 interface PaginatedResponse {
-  question_responses: QuestionResponse[];
+  survey_responses: SurveyResponse[];
   current_page: number;
   last_page: number;
   page_size: number;
@@ -25,17 +26,18 @@ interface PaginatedResponse {
 }
 
 const SurveyResponses: React.FC = () => {
-  const [responses, setResponses] = useState<QuestionResponse[]>([]);
+  const [responses, setResponses] = useState<SurveyResponse[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [emailFilter, setEmailFilter] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [cookies] = useCookies(["accessToken"]);
+  const token = cookies.accessToken;
 
   useEffect(() => {
     fetchResponses();
   }, [currentPage, emailFilter]);
 
-  // Fetch responses from the server
   const fetchResponses = async () => {
     setLoading(true);
     try {
@@ -43,9 +45,18 @@ const SurveyResponses: React.FC = () => {
       url.searchParams.append("page", currentPage.toString());
       if (emailFilter) url.searchParams.append("email_address", emailFilter);
 
-      const response = await fetch(url.toString());
+      const response = await fetch(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch responses");
+      }
+
       const data: PaginatedResponse = await response.json();
-      setResponses(data.question_responses);
+      setResponses(data.survey_responses);
       setCurrentPage(data.current_page);
       setTotalPages(data.last_page);
     } catch (error) {
@@ -71,7 +82,9 @@ const SurveyResponses: React.FC = () => {
       </h1>
 
       <div className="mb-4 flex items-center">
-        <p className="whitespace-nowrap w-fit pr-2 font-semibold text-md">Filter by Email:</p>
+        <p className="whitespace-nowrap w-fit pr-2 font-semibold text-md">
+          Filter by Email:
+        </p>
         <input
           type="text"
           placeholder="Enter Email"
@@ -91,67 +104,69 @@ const SurveyResponses: React.FC = () => {
             {responses.map((response) => (
               <div
                 key={response.response_id}
-                className="p-4 border border-gray-200 "
+                className="p-4 border border-gray-200"
               >
                 {Object.entries(response).map(([key, value]) => {
-                  if (key === "certificates" || key === "response_id")
-                    return null;
+                  if (key === "certificates" || key === "response_id") return null;
                   return (
                     <p key={key}>
                       <strong className="capitalize">
                         {key.replace(/_/g, " ")}:
                       </strong>{" "}
-                      {value}
+                      {value?.toString()}
                     </p>
                   );
                 })}
 
-                <div className="mt-2">
-                  <strong>Certificates:</strong>
-                  <ul className="list-disc ml-6 space-y-1">
-                    {response.certificates.map((cert: Certificate) => (
-                      <li key={cert.id} className="flex  items-center gap-2">
-                        <span>{cert.file_name}</span>
-                        <a
-                          href={cert.file_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <FaEye className="w-5 h-5 text-blue-600 hover:text-blue-800" />
-                        </a>
-                        <a
-                          href={`${server_url}/api/questions/responses/certificates/${cert.id}`}
-                          download={cert.file_name}
-                          className="buttonDownload"
-                        >
-                          Download
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mt-6 flex justify-between">
-                  <button
-                    onClick={() => handlePagination(currentPage - 1)}
-                    disabled={currentPage <= 1}
-                    className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
-                  >
-                    Previous
-                  </button>
-                  <span>
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => handlePagination(currentPage + 1)}
-                    disabled={currentPage >= totalPages}
-                    className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
-                  >
-                    Next
-                  </button>
-                </div>
+                {response.certificates?.length > 0 && (
+                  <div className="mt-2">
+                    <strong>Certificates:</strong>
+                    <ul className="list-disc ml-6 space-y-1">
+                      {response.certificates.map((cert) => (
+                        <li key={cert.id} className="flex items-center gap-2">
+                          <span>{cert.file_name}</span>
+                          <a
+                            href={cert.file_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <FaEye className="w-5 h-5 text-blue-600 hover:text-blue-800" />
+                          </a>
+                          <a
+                            href={`${server_url}/api/questions/responses/certificates/${cert.id}`}
+                            download={cert.file_name}
+                            className="text-blue-600 hover:underline"
+                          >
+                            <FaDownload className="inline mr-1" />
+                            Download
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ))}
+
+            <div className="mt-6 flex justify-between items-center">
+              <button
+                onClick={() => handlePagination(currentPage - 1)}
+                disabled={currentPage <= 1}
+                className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
+              >
+                Previous
+              </button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => handlePagination(currentPage + 1)}
+                disabled={currentPage >= totalPages}
+                className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       )}

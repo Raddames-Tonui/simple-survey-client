@@ -52,7 +52,7 @@ const SurveyList = (): JSX.Element => {
     return (
       <div className="flex justify-center items-center h-[80vh]">
         <p className="text-[#0190B0] font-semibold text-lg">
-          There is currently no active survey available at the moment.
+          There is no active survey available at the moment.
         </p>
       </div>
     );
