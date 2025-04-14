@@ -318,7 +318,7 @@ export default function CreateSurvey() {
 
           <button
             onClick={submitSurvey}
-            className="bg-[#00A5CB] hover:bg-[#0190B0] py-2 px-5 text-white font-semibold w-32"
+            className="Answers py-2 px-5 text-white font-semibold w-32"
           >
             Submit
           </button>

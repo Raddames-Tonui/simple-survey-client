@@ -36,7 +36,7 @@ const SignUpForm = (): JSX.Element => {
             className="mx-auto h-12 w-auto"
           />
         </NavLink>
-        <h1 className="text-2xl font-bold pb-2 pt-2 text-[#0190B0]">JazaForm</h1>
+        <h1 className="text-2xl font-bold  pt-2 text-[#0190B0]">JazaForm</h1>
         <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Create your account
         </h2>

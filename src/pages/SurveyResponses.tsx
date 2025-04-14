@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { server_url } from "../../config.json";
 import Loader from "../components/Loader";
-import { FaDownload, FaEye  } from "react-icons/fa";
-
-
+import { FaDownload, FaEye } from "react-icons/fa";
 
 interface Certificate {
   id: number;
@@ -12,7 +10,7 @@ interface Certificate {
 }
 
 interface QuestionResponse {
-  [key: string]: any; 
+  [key: string]: any;
   response_id: number;
   certificates: Certificate[];
   date_responded: string;
@@ -120,42 +118,40 @@ const SurveyResponses: React.FC = () => {
                         >
                           <FaEye className="w-5 h-5 text-blue-600 hover:text-blue-800" />
                         </a>
-                        <button
+                        <a
                           href={`${server_url}/api/questions/responses/certificates/${cert.id}`}
                           download={cert.file_name}
+                          className="buttonDownload"
                         >
-                          <FaDownload className="w-5 h-5 text-green-600 hover:text-green-800" />
-                        </button>
+                          Download
+                        </a>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-
                 <div className="mt-6 flex justify-between">
-            <button
-              onClick={() => handlePagination(currentPage - 1)}
-              disabled={currentPage <= 1}
-              className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
-            >
-              Previous
-            </button>
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => handlePagination(currentPage + 1)}
-              disabled={currentPage >= totalPages}
-              className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
-            >
-              Next
-            </button>
-          </div>
+                  <button
+                    onClick={() => handlePagination(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                    className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
+                  >
+                    Previous
+                  </button>
+                  <span>
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => handlePagination(currentPage + 1)}
+                    disabled={currentPage >= totalPages}
+                    className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             ))}
           </div>
-
-        
         </div>
       )}
     </div>

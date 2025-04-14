@@ -18,8 +18,9 @@ import Survey from "./pages/Survey";
 import SurveyResponses from "./pages/SurveyResponses";
 import NoPage from "./pages/NoPage";
 import CreateSurvey from "./pages/CreateSurvey";
-import SurveyQuestions from "./pages/SurveyQuestions";
+// import SurveyQuestions from "./pages/SurveyQuestions";
 import SurveyList from "./pages/SurveyList";
+import SurveyForm from "./pages/SurveyForm";
 
 const App = (): JSX.Element => {
 
@@ -35,9 +36,13 @@ const App = (): JSX.Element => {
                 <Route path="/survey/demo" element={<Survey />} />
                 <Route path="/survey/list" element={<SurveyList />} />
 
-                <Route
+                {/* <Route
                   path="/survey/:id/questions"
                   element={<SurveyQuestions />}
+                /> */}
+                <Route
+                  path="/survey/:id/questions"
+                  element={<SurveyForm />}
                 />
                 <Route path="*" element={<NoPage />} />
                 <Route element={<PrivateRoute />}>
@@ -47,6 +52,7 @@ const App = (): JSX.Element => {
                     element={<SurveyResponses />}
                   />
                 </Route>
+
               </Route>
 
               <Route path="/auth" element={<AuthLayout />}>

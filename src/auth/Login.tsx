@@ -31,9 +31,11 @@ const Login = (): JSX.Element => {
             className="mx-auto h-12 w-auto"
           />
         </NavLink>
-        <h1 className="text-2xl font-bold pb-3 pt-2 text-[#0190B0]">JazaForm</h1>
+        <h1 className="text-2xl font-bold  pt-2 text-[#0190B0]">
+          JazaForm
+        </h1>
         <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
+          Welcome Back
         </h2>
 
         {error && <p className="text-red-500 text-center">{error}</p>}
@@ -76,7 +78,7 @@ const Login = (): JSX.Element => {
               <input
                 id="password"
                 name="password"
-                type={showPassword ? "text" : "password"} 
+                type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -86,7 +88,7 @@ const Login = (): JSX.Element => {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)} 
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
               >
                 {showPassword ? "Hide" : "Show"}
@@ -104,7 +106,7 @@ const Login = (): JSX.Element => {
           </div>
         </form>
         <p className="text-center mt-6 text-gray-600 text-md">
-          Not a member?{' '}
+          Not a member?{" "}
           <Link
             to="/auth/signup"
             className="text-[#24C8ED] hover:text-[#4A8A98] transition duration-300"

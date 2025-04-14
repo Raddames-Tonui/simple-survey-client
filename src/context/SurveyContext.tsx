@@ -32,7 +32,8 @@ type SurveyContextType = {
   submitSurvey: (
     answers: { [key: number]: any },
     files: File[],
-    survey_id: string
+    survey_id: string,
+    onSuccess?: () => void 
   ) => Promise<void>;
   fetchSurveyQuestions: (surveyId: string) => void;
 };
@@ -120,11 +121,12 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
   const submitSurvey = async (
     answers: { [key: number]: any },
     files: File[],
-    survey_id: string
+    survey_id: string,
+    onSuccess?: () => void // Add optional callback
   ) => {
     const formData = new FormData();
-    formData.append("survey_id", survey_id); 
-
+    formData.append("survey_id", survey_id);
+  
     Object.entries(answers).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         value.forEach((v) => formData.append(`q_${key}`, v));
@@ -132,25 +134,27 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
         formData.append(`q_${key}`, value);
       }
     });
-
+  
     files.forEach((file) => {
       formData.append("certificates", file);
     });
-
+  
     try {
       const res = await fetch(`${server_url}/api/questions/responses`, {
         method: "PUT",
         body: formData,
       });
-
+  
       if (!res.ok) throw new Error("Failed to submit");
-
+  
       toast.success("Survey submitted successfully");
+      if (onSuccess) onSuccess(); 
     } catch (err) {
       console.error("Submit error:", err);
       toast.error("Error submitting survey");
     }
   };
+  
 
   return (
     <SurveyContext.Provider
