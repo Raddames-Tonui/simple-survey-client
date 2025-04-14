@@ -7,10 +7,17 @@ interface QuestionProps {
   onFileChange?: (id: number, files: FileList | null) => void;
 }
 
-const QuestionProps: FC<QuestionProps> = ({ question, answer, onAnswerChange, onFileChange }) => {
+const QuestionProps: FC<QuestionProps> = ({
+  question,
+  answer,
+  onAnswerChange,
+  onFileChange,
+}) => {
   const { id, type, required, options, text, description } = question;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     onAnswerChange(id, e.target.value);
   };
 
@@ -40,7 +47,7 @@ const QuestionProps: FC<QuestionProps> = ({ question, answer, onAnswerChange, on
             required={required}
             value={answer || ""}
             onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded min-h-[20vh] h-auto"
           />
         );
 
@@ -82,7 +89,9 @@ const QuestionProps: FC<QuestionProps> = ({ question, answer, onAnswerChange, on
                 <input
                   type="checkbox"
                   value={option.value}
-                  checked={Array.isArray(answer) && answer.includes(option.value)}
+                  checked={
+                    Array.isArray(answer) && answer.includes(option.value)
+                  }
                   onChange={handleCheckboxChange}
                   className="mr-2"
                 />
@@ -142,8 +151,10 @@ const QuestionProps: FC<QuestionProps> = ({ question, answer, onAnswerChange, on
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-1">{text}</label>
-      {description && <p className="text-gray-500 text-sm mb-2">{description}</p>}
+      <label className="block text-md font-medium mb-1">{text}</label>
+      {description && (
+        <p className="text-gray-500 text-sm mb-2">{description}</p>
+      )}
       {renderInput()}
     </div>
   );

@@ -70,13 +70,14 @@ const SurveyResponses: React.FC = () => {
         Survey Responses
       </h1>
 
-      <div className="mb-4">
+      <div className="mb-4 flex items-center">
+        <p className="whitespace-nowrap w-fit pr-2 font-semibold text-md">Filter by Email:</p>
         <input
           type="text"
-          placeholder="Filter by Email"
+          placeholder="Enter Email"
           value={emailFilter}
           onChange={handleEmailFilterChange}
-          className="p-2 border border-gray-300 rounded-md w-full md:w-1/2"
+          className="p-2 border border-gray-300 rounded-md w-full"
         />
       </div>
 

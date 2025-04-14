@@ -124,7 +124,7 @@ export default function CreateSurvey() {
       }
 
       const data = await res.json();
-      toast.success(`Survey created`);
+      toast.success(`📝 Survey has been created!`);
 
       setTitle("");
       setDescription("");
@@ -157,7 +157,7 @@ export default function CreateSurvey() {
   return (
     <div className="min-h-screen bg-white my-4 md:my-6 md:border md:border-gray-300">
       <div className="py-6 md:pl-8 px-4">
-        <h1 className="text-xl font-bold mb-4">Create New Survey</h1>
+        <h1 className="text-xl font-bold mb-4 text-[#0190B0]">Create New Survey</h1>
 
         <div className="mb-4">
           <label className="block font-medium">Title</label>
@@ -249,7 +249,7 @@ export default function CreateSurvey() {
             <button
               type="button"
               onClick={addOptionField}
-              className="mt-1 text-sm text-blue-500"
+              className="mt-1 text-md text-blue-500 font-semibold"
             >
               + Add Option
             </button>
@@ -258,7 +258,7 @@ export default function CreateSurvey() {
 
         <button
           onClick={handleAddQuestion}
-          className="bg-green-600 text-white px-4 py-2 rounded mb-6 block"
+          className="bg-[#00A5CB] hover:bg-[#0190B0] text-white px-4 py-2 font-semibold  mb-6 block"
         >
           Add Question
         </button>
@@ -318,7 +318,7 @@ export default function CreateSurvey() {
 
           <button
             onClick={submitSurvey}
-            className="Answers py-2 px-5 text-white font-semibold w-32"
+            className="Answers py-2 px-5 text-white  w-32 bg-[#00A5CB] hover:bg-[#0190B0] font-semibold"
           >
             Submit
           </button>

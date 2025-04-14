@@ -16,7 +16,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange, label }) => {
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
         />
-        <span className="relative w-6 h-6 flex justify-center items-center bg-gray-100 border-2 border-gray-400 rounded-md shadow-md transition-all duration-500 peer-checked:border-[#00A5CB] peer-checked:bg-[#00A5CB] peer-hover:scale-105 peer-checked:hover:bg-[#0190B0]">
+        <span className="relative w-6 h-6 flex justify-center items-center bg-gray-100 border border-gray-400 rounded-md shadow-sm transition-all duration-500 peer-checked:border-[#00A5CB] peer-checked:bg-[#00A5CB] peer-hover:scale-105 peer-checked:hover:bg-[#0190B0]">
           <span className="absolute inset-0 bg-gradient-to-br from-white/30 to-white/10 opacity-0 peer-checked:opacity-100 rounded-md transition-all duration-500 peer-checked:animate-pulse"></span>
 
           <svg
