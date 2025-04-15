@@ -81,8 +81,14 @@ const Navbar = (): JSX.Element => {
       <nav className="bg-white h-[10vh] w-full shadow-sm fixed top-0 left-0 right-0 z-30">
         <div className="flex justify-between items-center w-full md:max-w-[80vw] lg:max-w-[70vw] mx-auto h-full px-4 md:px-0">
           {/* Logo */}
-          <NavLink to={user ? "/survey/user-surveys" : "/"}>
+          <NavLink
+            to={user ? "/survey/user-surveys" : "/"}
+            className="flex flex-row items-center justify-center space-y-1 gap-2 pl-5 md:pl-0"
+          >
             <img src="/survey-icon.webp" alt="Home" className="h-10 w-10" />
+            <span className="text-[#0190B0] text-lg font-bold tracking-wide">
+              JazaForm
+            </span>
           </NavLink>
 
           {/* Desktop Links */}

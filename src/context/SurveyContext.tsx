@@ -50,7 +50,7 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
   const [fetchedSurveyIds, setFetchedSurveyIds] = useState<Set<string>>(
     new Set()
   );
-  console.log(survey);
+  // console.log(survey);
 
   // ---- FETCH SPECIFIC SURVEY BY ID ----
   const fetchSurveyQuestions = useCallback(
@@ -85,7 +85,7 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
         setFetchedSurveyIds((prev) => new Set(prev).add(surveyId));
       } catch (err) {
         console.error("Error fetching survey:", err);
-        toast.error("Error loading survey.");
+        // toast.error("Error loading survey.");
       } finally {
         setLoading(false);
       }
@@ -133,7 +133,7 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
       if (onSuccess) onSuccess();
     } catch (err) {
       console.error("Submit error:", err);
-      toast.error("Error submitting survey.");
+      // toast.error("Error submitting survey.");
     }
   };
   

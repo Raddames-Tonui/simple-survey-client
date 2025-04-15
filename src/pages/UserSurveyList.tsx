@@ -100,7 +100,7 @@ const UserSurveysList = (): JSX.Element => {
           {userSurveys.map((survey, index) => (
             <div
               key={survey.id}
-              className="rounded-xl overflow-hidden shadow-md border border-gray-200 bg-white"
+              className="rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-white"
             >
               <img
                 src={surveyImages[index % surveyImages.length]}

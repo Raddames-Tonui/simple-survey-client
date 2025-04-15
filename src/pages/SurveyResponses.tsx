@@ -85,8 +85,8 @@ const SurveyResponses: React.FC = () => {
         <hr className="text-[#0190B0] mb-4" />
       </div>
 
-      <div className="mb-4 flex items-center">
-        <p className="whitespace-nowrap w-fit pr-2 font-semibold text-md">
+      <div className="mb-4 flex items-center gap-2">
+        <p className="px-3 md:px-0  whitespace-nowrap w-fit  font-semibold text-md">
           Filter by Email:
         </p>
         <input
@@ -99,11 +99,11 @@ const SurveyResponses: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center h-[50vh]">
           <Loader />
         </div>
       ) : (
-        <div className="min-h-screen bg-white p-5 border border-gray-300 ">
+        <div className="min-h-screen  bg-white p-5 border border-gray-300 ">
           <div className="space-y-4">
             {responses.map((response) => (
               <div
