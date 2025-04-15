@@ -1,4 +1,3 @@
-import React from "react";
 
 interface ReviewSectionProps {
   sortedQuestions: { id: string; text: string; type: string }[];

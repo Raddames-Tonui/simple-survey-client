@@ -1,5 +1,3 @@
-import React from "react";
-import Loader from "./Loader";
 import SubmitLoader from "./SubmitLoader";
 
 const SubmissionModal = (): JSX.Element => {
