@@ -14,7 +14,6 @@ import SignUpForm from "./auth/SignUpForm";
 import PrivateRoute from "./components/PrivateRoute";
 
 import Home from "./pages/Home";
-import Demo from "./pages/Demo";
 import NoPage from "./pages/NoPage";
 import SurveyForm from "./pages/SurveyForm";
 import SurveyList from "./pages/SurveyList";
@@ -31,7 +30,6 @@ const App = (): JSX.Element => {
               {/* Routes for authenticated users */}
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
-                <Route path="/survey/demo" element={<Demo />} />
                 <Route path="/survey/list" element={<SurveyList />} />
                 <Route path="/survey/:id/questions" element={<SurveyForm />} />
                 <Route path="*" element={<NoPage />} />
