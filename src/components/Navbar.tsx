@@ -7,41 +7,63 @@ const Navbar = (): JSX.Element => {
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const toggleMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     isActive ? "text-[#0190B0] border-b-2 border-[#0190B0]" : "text-gray-700";
 
-  const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-
   const Links = () => (
     <>
-      <li>
-        <NavLink to={user ? "/survey/create" : "/"} className={linkClass}>
-          {user ? "Create" : "Home"}
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to="/survey/user-surveys" className={linkClass}>
-          Survey
-        </NavLink>
-      </li>
-      {user && (
-        <li>
-          <NavLink to="/survey/response" className={linkClass}>
-            Response
-          </NavLink>
-        </li>
+      {user ? (
+        <>
+          <li>
+            <NavLink to="/survey/create" className={linkClass}>
+              Create
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/survey/user-surveys" className={linkClass}>
+              Survey
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/survey/response" className={linkClass}>
+              Response
+            </NavLink>
+          </li>
+          <li>
+            <button
+              onClick={() => logout()}
+              className="relative w-24 h-10 rounded-3xl text-sm font-inherit border-none overflow-hidden z-10 bg-gradient-to-r from-[#0190B0] to-[#24C8ED] hover:from-[#4A8A98] transition-all duration-500 ring-slate-900 hover:ring-2 hover:ring-[#173B3F] font-semibold text-white"
+            >
+              Logout
+            </button>
+          </li>
+        </>
+      ) : (
+        <>
+          <li>
+            <NavLink to="/" className={linkClass}>
+              Home
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/survey/list" className={linkClass}>
+              Survey
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/auth/login"
+              className="relative w-24 h-10 flex items-center justify-center rounded-3xl text-sm font-inherit border-none overflow-hidden z-10 bg-gradient-to-r from-[#0190B0] to-[#24C8ED] hover:from-[#4A8A98] transition-all duration-500 ring-slate-900 hover:ring-2 hover:ring-[#173B3F] font-semibold text-white"
+            >
+              Sign In
+            </NavLink>
+          </li>
+        </>
       )}
-      <li>
-        {user ? (
-          <button onClick={logout} className="text-gray-700">
-            Logout
-          </button>
-        ) : (
-          <NavLink to="/auth/login" className="text-gray-700">
-            Sign In
-          </NavLink>
-        )}
-      </li>
     </>
   );
 
@@ -50,7 +72,7 @@ const Navbar = (): JSX.Element => {
       {/* Overlay Blur Behind Navbar */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 top-[10vh] bg-black/5  z-10 "
+          className="fixed inset-0 top-[10vh] bg-black/10 z-10"
           onClick={toggleMenu}
         />
       )}
@@ -69,7 +91,7 @@ const Navbar = (): JSX.Element => {
           </ul>
 
           {/* Mobile Toggle Button */}
-          <button onClick={toggleMenu} className="md:hidden z-40 ">
+          <button onClick={toggleMenu} className="md:hidden z-40">
             {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
         </div>
@@ -77,8 +99,8 @@ const Navbar = (): JSX.Element => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed top-[10vh] right-0 h-[40vh] w-2/4 bg-white shadow-md z-20">
-          <ul className="flex flex-col gap-y-10 h-full  items-center px-6 py-8 text-md font-semibold">
+        <div className="fixed top-[10vh] right-0 h-[50vh] w-3/4 bg-white shadow-md z-20">
+          <ul className="flex flex-col items-center justify-evenly h-full px-4 py-6 text-md font-semibold">
             <Links />
           </ul>
         </div>
