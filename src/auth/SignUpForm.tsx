@@ -27,7 +27,7 @@ const SignUpForm = (): JSX.Element => {
   };
 
   return (
-    <div className="max-h-screen flex items-center justify-center py-12 px-6 ">
+    <div className="h-screen flex items-center justify-center py-12 px-6 ">
       <div className="bg-white mx-auto flex flex-col items-center justify-center px-6 max-w-md w-full py-6 rounded-md border border-gray-300">
         <NavLink to="/">
           <img
