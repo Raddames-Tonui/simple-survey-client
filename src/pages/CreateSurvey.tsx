@@ -155,9 +155,15 @@ export default function CreateSurvey() {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-white my-4 md:my-6 md:border md:border-gray-300">
-      <div className="py-6 md:pl-8 px-4">
-        <h1 className="text-xl font-bold mb-4 text-[#0190B0]">Create New Survey</h1>
+    <div className="min-h-[90vh]  ">
+      <div className="">
+        <h1 className="px-3 md:px-0 text-xl font-bold mb-4  mt-6 text-[#0190B0]">
+          Create Your Survey
+        </h1>
+        <hr className="text-[#0190B0] mb-4" />
+      </div>
+      <div className=" md:pl-8 px-4 bg-white min-h-[80vh] my-4 md:my-6 md:border md:border-gray-300">
+        <h1 className="text-xl font-bold mb-4 text-[#0190B0]"></h1>
 
         <div className="mb-4">
           <label className="block font-medium">Title</label>

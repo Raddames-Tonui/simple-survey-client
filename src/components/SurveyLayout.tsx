@@ -1,4 +1,4 @@
-import QuestionComponent from "./QuestionComponent";
+import QuestionComponent from "../pages/survey/QuestionComponent";
 
 const SurveyLayout = ({
   survey,

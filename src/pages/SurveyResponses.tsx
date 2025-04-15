@@ -77,9 +77,12 @@ const SurveyResponses: React.FC = () => {
 
   return (
     <div className="container mx-auto my-4 md:my-6">
-      <h1 className="text-[#0190B0] font-semibold text-xl mb-2">
-        Survey Responses
-      </h1>
+      <div className="">
+        <h1 className="px-3 md:px-0 text-xl font-bold mb-4  mt-6 text-[#0190B0]">
+          Survey Responses
+        </h1>
+        <hr className="text-[#0190B0] mb-4" />
+      </div>
 
       <div className="mb-4 flex items-center">
         <p className="whitespace-nowrap w-fit pr-2 font-semibold text-md">
@@ -107,7 +110,8 @@ const SurveyResponses: React.FC = () => {
                 className="p-4 border border-gray-200"
               >
                 {Object.entries(response).map(([key, value]) => {
-                  if (key === "certificates" || key === "response_id") return null;
+                  if (key === "certificates" || key === "response_id")
+                    return null;
                   return (
                     <p key={key}>
                       <strong className="capitalize">
