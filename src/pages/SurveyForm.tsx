@@ -5,9 +5,9 @@ import Loader from "../components/Loader";
 import { useSurveyContext } from "../context/SurveyContext";
 import SubmissionModal from "../components/SubmissionModal";
 import ThankYouModal from "../components/ThankYouModal";
-import QuestionComponent from "../components/QuestionComponent";
 import NavigationControls from "./survey/NavigationControls";
 import ReviewSection from "./survey/ReviewSection";
+import QuestionComponent from "./survey/QuestionComponent";
 
 const SurveyForm = (): JSX.Element => {
   const { id } = useParams<{ id: string }>();
@@ -77,7 +77,12 @@ const SurveyForm = (): JSX.Element => {
     return answer || answer === 0;
   };
 
-  if (loading || !survey) return <Loader />;
+  if (loading || !survey)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
 
   const sortedQuestions = [...survey.questions].sort(
     (a, b) => a.order - b.order
@@ -118,15 +123,25 @@ const SurveyForm = (): JSX.Element => {
     setIsSubmitting(true);
 
     const transformedAnswers: { [id: number]: string } = {};
-    for (const [qid, value] of Object.entries(answers)) {
-      transformedAnswers[Number(qid)] = Array.isArray(value)
-        ? value.join(", ")
-        : value;
+    let emailAnswer: string | null = null;
+
+    for (const [qidStr, value] of Object.entries(answers)) {
+      const qid = Number(qidStr);
+      const question = sortedQuestions.find((q) => q.id === qid);
+      if (!question) continue;
+
+      const formattedValue = Array.isArray(value) ? value.join(", ") : value;
+
+      if (question.type === "email") {
+        emailAnswer = formattedValue;
+      } else {
+        transformedAnswers[qid] = formattedValue;
+      }
     }
 
     const flattenedFiles = Object.values(files).flat();
 
-    submitSurvey(transformedAnswers, flattenedFiles, id, () => {
+    submitSurvey(transformedAnswers, flattenedFiles, id!, emailAnswer, () => {
       localStorage.removeItem(`survey-${id}`);
       setAnswers({});
       setFiles({});
@@ -138,14 +153,16 @@ const SurveyForm = (): JSX.Element => {
   };
 
   return (
-    <div className="mx-auto min-h-[90vh] py-10 px-4 bg-white md:border-x md:border-gray-300 flex flex-col">
-      <div className="max-w-2xl w-full mx-auto border border-gray-300 flex-1">
-        <div className="w-full bg-gray-200 pt-4">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-center">{survey.title}</h1>
+    <div className="mx-auto min-h-[90vh] md:my-5   bg-white md:border md:border-gray-300 flex flex-col">
+      <div className=" w-full mx-auto  flex-1">
+        <div className="w-full min-h-[12vh] bg-gray-200  relative">
+          <div className="flex flex-col py-5  justify-center items-center">
+            <h1 className="text-2xl font-bold text-center text-gray-800">
+              {survey.title}
+            </h1>
             <p className="text-gray-600 text-center">{survey.description}</p>
           </div>
-          <div className="w-full h-2 bg-gray-200 mb-4">
+          <div className="absolute bottom-0 w-full h-2 bg-gray-200 ">
             <div
               className="h-2 bg-[#24C8ED] transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
@@ -153,7 +170,7 @@ const SurveyForm = (): JSX.Element => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
+        <form onSubmit={handleSubmit} className="py-10 px-4 md:px-6 lg:px-10">
           {!isReview ? (
             <>
               <div className="mb-6">
@@ -167,7 +184,7 @@ const SurveyForm = (): JSX.Element => {
                   files[currentQuestion.id]?.length > 0 && (
                     <div className="mt-3 space-y-2">
                       <p className="text-sm font-semibold">Selected Files:</p>
-                      <ul className="list-disc list-inside text-sm">
+                      <ul className="list-disc list-inside text-sm pl-4">
                         {files[currentQuestion.id].map((file, index) => (
                           <li
                             key={index}

@@ -15,8 +15,26 @@ const Layout = (): JSX.Element => {
         position="top-right"
         reverseOrder={false}
         toastOptions={{
+          // Global default toast style
           style: {
             zIndex: 100,
+            top: "0vh", 
+            borderRadius: "0", 
+          },
+          success: {
+            style: {
+              backgroundColor: "#28a745",
+              color: "white",
+              borderRadius: "0", 
+            },
+          },
+          error: {
+            // Error toast custom style
+            style: {
+              backgroundColor: "#dc3545", 
+              color: "white",
+              borderRadius: "0",
+            },
           },
         }}
         containerClassName="mt-[10vh]"

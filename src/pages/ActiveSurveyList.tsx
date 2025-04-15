@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
 import { server_url } from "../../config.json";
 import Loader from "../components/Loader";
 import { Link } from "react-router-dom";
@@ -31,7 +30,6 @@ const ActiveSurveyList = (): JSX.Element => {
         setSurveys(publishedSurveys.slice(0, 3));
       } else {
         console.error("Error fetching surveys:", error);
-        // toast.error(data.message || "Failed to fetch surveys.");
       }
     } catch (error) {
       console.error("Error fetching surveys:", error);

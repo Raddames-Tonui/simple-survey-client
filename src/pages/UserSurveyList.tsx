@@ -59,10 +59,20 @@ const UserSurveysList = (): JSX.Element => {
 
   if (userSurveys.length === 0) {
     return (
-      <div className="flex justify-center items-center h-[80vh]">
-        <p className="text-[#0190B0] font-semibold text-lg">
-          You haven’t created any surveys yet.
-        </p>
+      <div className="flex justify-center items-center h-screen">
+        <div className="flex flex-col justify-center items-center">
+          <p className="text-[#0190B0] font-semibold text-lg">
+            You haven’t created any surveys yet.
+          </p>
+          <button className="mt-5">
+            <Link
+              to="/survey/create"
+              className="px-6 py-2 bg-[#0190B0] text-white rounded hover:bg-[#017f9c] transition"
+            >
+              Create Survey
+            </Link>
+          </button>
+        </div>
       </div>
     );
   }
@@ -77,7 +87,7 @@ const UserSurveysList = (): JSX.Element => {
   ];
 
   return (
-    <div className="mb-5 h-auto md:w-[80vw] lg:w-[70vw]">
+    <div className="md:mb-5 h-auto md:w-[80vw] lg:w-[70vw]">
       <div className="">
         <h1 className="px-3 md:px-0 text-xl font-bold mb-4  mt-6 text-[#0190B0]">
           Your Surveys
@@ -102,9 +112,6 @@ const UserSurveysList = (): JSX.Element => {
                 {survey.description && survey.description.length > 100 ? (
                   <p className="text-sm text-gray-600 mb-2">
                     {survey.description.slice(0, 100)}...
-                    <span className="text-blue-600 cursor-pointer ml-1 hover:underline">
-                      Read more
-                    </span>
                   </p>
                 ) : (
                   <p className="text-sm text-gray-600 mb-2">
@@ -124,17 +131,7 @@ const UserSurveysList = (): JSX.Element => {
                   >
                     {survey.is_published ? "Active" : "Closed"}
                   </span>
-                  {survey.is_published ? (
-                    <Link to={`/survey/${survey.id}/questions/`}>
-                      <button className="px-4 py-2 bg-[#0190B0] text-white text-sm rounded hover:bg-[#017a95] transition">
-                        Start Survey
-                      </button>
-                    </Link>
-                  ) : (
-                    <span className="text-sm text-gray-500 italic">
-                      Not Available
-                    </span>
-                  )}
+                  {/* Removed "Start Survey" button */}
                 </div>
               </div>
             </div>

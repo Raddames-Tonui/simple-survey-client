@@ -39,7 +39,7 @@ const NavigationControls: React.FC<NavigationControlsProps> = ({
           disabled={currentQuestion.required && !isAnswered}
           className={`px-6 py-2 text-white bottom-0 ${
             isAnswered || !currentQuestion.required
-              ? "bg-[#24C8ED] hover:bg-[#0190B0]"
+              ? "bg-[#3ea9be] hover:bg-[#0190b0]"
               : "bg-gray-400 cursor-not-allowed"
           }`}
         >

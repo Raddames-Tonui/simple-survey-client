@@ -74,9 +74,10 @@ const SurveyResponses: React.FC = () => {
   const handlePagination = (page: number) => {
     setCurrentPage(page);
   };
+  console.log(responses)
 
   return (
-    <div className="container mx-auto my-4 md:my-6">
+    <div className="md:mb-5 h-auto md:w-[80vw] lg:w-[70vw]">
       <div className="">
         <h1 className="px-3 md:px-0 text-xl font-bold mb-4  mt-6 text-[#0190B0]">
           Survey Responses
@@ -98,16 +99,16 @@ const SurveyResponses: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-[70vh]">
+        <div className="flex justify-center items-center">
           <Loader />
         </div>
       ) : (
-        <div className="bg-white p-5 border border-gray-300 shadow-md">
+        <div className="min-h-screen bg-white p-5 border border-gray-300 ">
           <div className="space-y-4">
             {responses.map((response) => (
               <div
                 key={response.response_id}
-                className="p-4 border border-gray-200"
+                className="p-4 border border-gray-200 hover:bg-gray-100"
               >
                 {Object.entries(response).map(([key, value]) => {
                   if (key === "certificates" || key === "response_id")
@@ -127,19 +128,22 @@ const SurveyResponses: React.FC = () => {
                     <strong>Certificates:</strong>
                     <ul className="list-disc ml-6 space-y-1">
                       {response.certificates.map((cert) => (
-                        <li key={cert.id} className="flex items-center gap-2">
+                        <li key={cert.id} className="flex items-center gap-2 md:gap-4 font-semibold">
                           <span>{cert.file_name}</span>
                           <a
                             href={cert.file_url}
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline" 
                           >
-                            <FaEye className="w-5 h-5 text-blue-600 hover:text-blue-800" />
+                            <FaEye className="inline mr-1"/>
+                            View
                           </a>
                           <a
                             href={`${server_url}/api/questions/responses/certificates/${cert.id}`}
                             download={cert.file_name}
-                            className="text-blue-600 hover:underline"
+                            // className="buttonDownload"
+                            className="text-green-600 hover:underline"
                           >
                             <FaDownload className="inline mr-1" />
                             Download
@@ -156,17 +160,17 @@ const SurveyResponses: React.FC = () => {
               <button
                 onClick={() => handlePagination(currentPage - 1)}
                 disabled={currentPage <= 1}
-                className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
+                className=" py-2 px-5 text-white  w-32 bg-[#00A5CB] hover:bg-[#0190B0] font-semibold   disabled:bg-gray-400"
               >
                 Previous
               </button>
-              <span>
+              <span className="font-semibold">
                 Page {currentPage} of {totalPages}
               </span>
               <button
                 onClick={() => handlePagination(currentPage + 1)}
                 disabled={currentPage >= totalPages}
-                className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
+                className=" py-2 px-5 text-white  w-32 bg-[#00A5CB] hover:bg-[#0190B0] font-semibold   disabled:bg-gray-400"
               >
                 Next
               </button>

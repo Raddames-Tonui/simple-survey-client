@@ -5,6 +5,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Checkbox from "../components/Checkbox";
 import { useAuth } from "../context/AuthContext";
 import { useCookies } from "react-cookie";
+import Loader from "../components/Loader";
 
 interface Question {
   name: string;
@@ -17,7 +18,7 @@ interface Question {
 }
 
 export default function CreateSurvey() {
-  const { user, isLoading } = useAuth();
+  const { isLoading } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isPublished, setIsPublished] = useState(false);
@@ -92,6 +93,8 @@ export default function CreateSurvey() {
     setQuestions(reorderedQuestions);
   };
 
+
+  // SUBMITTING SURVEY 
   const submitSurvey = async () => {
     try {
       if (!token) {
@@ -109,6 +112,7 @@ export default function CreateSurvey() {
         })),
       };
 
+      
       const res = await fetch(`${server_url}/api/surveys/create`, {
         method: "POST",
         headers: {
@@ -152,17 +156,18 @@ export default function CreateSurvey() {
     toast.success("Draft cleared");
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className="flex justify-center items-center h-[80vh]"><Loader/></div>;
+
 
   return (
-    <div className="min-h-[90vh]  ">
+    <div className="min-h-screen h-auto   ">
       <div className="">
         <h1 className="px-3 md:px-0 text-xl font-bold mb-4  mt-6 text-[#0190B0]">
           Create Your Survey
         </h1>
         <hr className="text-[#0190B0] mb-4" />
       </div>
-      <div className=" md:pl-8 px-4 bg-white min-h-[80vh] my-4 md:my-6 md:border md:border-gray-300">
+      <div className=" md:pl-8 px-4 bg-white min-h-[80vh] h-auto py-6 md:my-6 md:border md:border-gray-300">
         <h1 className="text-xl font-bold mb-4 text-[#0190B0]"></h1>
 
         <div className="mb-4">
@@ -314,7 +319,7 @@ export default function CreateSurvey() {
             </DragDropContext>
           </div>
         )}
-        <div className="flex justify-end">
+        <div className="flex justify-end mb-7">
           <button
             onClick={handleCancel}
             className="border border-gray-500 hover:bg-gray-400 hover:text-white py-2 px-5 mr-4 text-gray-800 font-semibold w-32"

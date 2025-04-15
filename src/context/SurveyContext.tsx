@@ -35,6 +35,7 @@ type SurveyContextType = {
     answers: { [key: number]: any },
     files: File[],
     survey_id: string,
+    email?: string,
     onSuccess?: () => void
   ) => Promise<void>;
   fetchSurveyQuestions: (surveyId: string) => void;
@@ -49,9 +50,9 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
   const [fetchedSurveyIds, setFetchedSurveyIds] = useState<Set<string>>(
     new Set()
   );
-  console.log(survey)
+  console.log(survey);
 
-  // ---- FETCH SPECIFIC SURVEY BY ID ---- 
+  // ---- FETCH SPECIFIC SURVEY BY ID ----
   const fetchSurveyQuestions = useCallback(
     async (surveyId: string) => {
       if (fetchedSurveyIds.has(surveyId)) {
@@ -61,7 +62,9 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
 
       setLoading(true);
       try {
-        const res = await fetch(`${server_url}/api/questions/survey/${surveyId}`);
+        const res = await fetch(
+          `${server_url}/api/questions/survey/${surveyId}`
+        );
         const data = await res.json();
 
         if (res.status !== 200) {
@@ -73,7 +76,9 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
         const formattedSurvey: SurveyData = {
           title: data.title || "Survey",
           description: data.description || "",
-          questions: (data.questions || []).sort((a: any, b: any) => a.id - b.id),
+          questions: (data.questions || []).sort(
+            (a: any, b: any) => a.id - b.id
+          ),
         };
 
         setSurvey(formattedSurvey);
@@ -93,11 +98,16 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
     answers: { [key: number]: any },
     files: File[],
     survey_id: string,
+    email?: string,
     onSuccess?: () => void
   ) => {
     const formData = new FormData();
     formData.append("survey_id", survey_id);
-
+  
+    if (email) {
+      formData.append("email", email);
+    }
+  
     // Append answers
     Object.entries(answers).forEach(([key, value]) => {
       if (Array.isArray(value)) {
@@ -106,27 +116,27 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
         formData.append(`q_${key}`, value);
       }
     });
-
+  
     // Append file uploads
     files.forEach((file) => {
       formData.append("certificates", file);
     });
-
+  
     try {
       const res = await fetch(`${server_url}/api/questions/responses`, {
         method: "PUT",
         body: formData,
       });
-
+  
       if (!res.ok) throw new Error("Failed to submit");
-
-      // toast.success("Survey submitted successfully.");
+  
       if (onSuccess) onSuccess();
     } catch (err) {
       console.error("Submit error:", err);
       toast.error("Error submitting survey.");
     }
   };
+  
 
   // ---- AUTO FETCH DEFAULT SURVEY (OPTIONAL) ---- //
   useEffect(() => {

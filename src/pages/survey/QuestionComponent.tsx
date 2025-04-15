@@ -56,14 +56,25 @@ const QuestionComponent: FC<QuestionProps> = ({
       case "file":
         return (
           <>
-            <input
-              type="file"
-              required={required}
-              multiple
-              accept=".pdf"
-              onChange={handleFileInput}
-              className="w-full p-2 border border-gray-300 rounded"
-            />
+            <label className="block text-sm font-medium text-gray-700 mt-3 mb-1">
+              Upload File(s)
+            </label>
+            <div className="relative w-full">
+              <input
+                type="file"
+                required={required}
+                multiple
+                accept=".pdf"
+                onChange={handleFileInput}
+                className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4
+                 file:border-0
+                 file:text-md file:font-semibold
+                 file:bg-[#46535c] file:text-white
+                 hover:file:bg-[#0190B0]
+                 cursor-pointer"
+              />
+            </div>
+
             {type === "file" && fileErrors?.[id] && (
               <p className="text-red-600 text-sm mt-2">{fileErrors[id]}</p>
             )}

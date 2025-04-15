@@ -68,7 +68,7 @@ const SurveyList = (): JSX.Element => {
   ];
 
   return (
-    <div className="mb-5 h-auto md:w-[80vw] lg:w-[70vw]">
+    <div className="md:mb-5 h-auto md:w-[80vw] lg:w-[70vw]">
       <div className="">
         <h1 className="px-3 md:px-0 text-xl font-bold mb-4  mt-6 text-[#0190B0]">
           Existing Surveys
