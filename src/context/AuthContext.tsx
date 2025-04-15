@@ -79,24 +79,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setCookie("accessToken", access_token, {
         path: "/",
         secure: true,
-        sameSite: "None",
+        sameSite: "none",
       });
       setCookie("refreshToken", refresh_token, {
         path: "/",
         secure: true,
-        sameSite: "None",
+        sameSite: "none",
       });
       setCookie("user", JSON.stringify(user), {
         path: "/",
         secure: true,
-        sameSite: "None",
+        sameSite: "none",
       });
 
       setUser(user);
       navigate("/survey/create");
-    } catch (error: any) {
-      toast.error(error.message || "Login error");
-      console.error("Login error:", error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message || "Login error");
+        console.error("Login error:", error);
+      } else {
+        toast.error("An unexpected error occurred");
+        console.error("Unexpected error:", error);
+      }
     }
   };
 

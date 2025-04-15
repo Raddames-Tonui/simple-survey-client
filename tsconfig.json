@@ -4,16 +4,20 @@
     "module": "ESNext",
     "lib": ["DOM", "ESNext"],
     "moduleResolution": "Bundler",
-    "jsx": "react-jsx",
     "outDir": "./build",
     "strict": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx",
+    "types": ["react", "react-dom"]
+
   },
   "include": [
     "src/**/*"
   ]
 }
+
+
