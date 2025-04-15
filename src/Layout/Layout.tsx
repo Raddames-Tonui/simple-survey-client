@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Outlet } from "react-router-dom";
 
-const Layout = (): JSX.Element => {
+const Layout = (): React.JSX.Element => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-100">
       <div className="fixed top-0 left-0 w-full h-[10vh] bg-white z-50 shadow-sm">
@@ -17,20 +17,20 @@ const Layout = (): JSX.Element => {
           // Global default toast style
           style: {
             zIndex: 100,
-            top: "0vh", 
-            borderRadius: "0", 
+            top: "0vh",
+            borderRadius: "0",
           },
           success: {
             style: {
               backgroundColor: "#28a745",
               color: "white",
-              borderRadius: "0", 
+              borderRadius: "0",
             },
           },
           error: {
             // Error toast custom style
             style: {
-              backgroundColor: "#dc3545", 
+              backgroundColor: "#dc3545",
               color: "white",
               borderRadius: "0",
             },

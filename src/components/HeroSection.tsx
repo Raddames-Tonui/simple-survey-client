@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const HeroSection = (): JSX.Element => {
+const HeroSection = (): React.JSX.Element => {
   return (
     <section className="relative h-[60vh] mt-[2vh] flex items-center justify-start bg-black/90 lg:rounded-xl">
       <img

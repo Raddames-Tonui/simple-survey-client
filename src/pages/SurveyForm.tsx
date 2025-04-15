@@ -9,7 +9,7 @@ import NavigationControls from "./survey/NavigationControls";
 import ReviewSection from "./survey/ReviewSection";
 import QuestionComponent from "./survey/QuestionComponent";
 
-const SurveyForm = (): JSX.Element => {
+const SurveyForm = (): React.JSX.Element => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { survey, loading, submitSurvey, fetchSurveyQuestions } =

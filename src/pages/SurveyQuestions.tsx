@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"; // To get the survey id from the U
 import Loader from "../components/Loader";
 import { useSurveyContext } from "../context/SurveyContext";
 
-const SurveyQuestions = (): JSX.Element => {
+const SurveyQuestions = (): React.JSX.Element => {
   const { id } = useParams<{ id: string }>(); // Get the survey id from URL
   const { survey, loading, submitSurvey, fetchSurveyQuestions } =
     useSurveyContext();

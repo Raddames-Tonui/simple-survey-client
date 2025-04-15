@@ -19,7 +19,7 @@ import SurveyList from "./pages/SurveyList";
 import CreateSurvey from "./pages/CreateSurvey";
 import UserSurveyList from "./pages/UserSurveyList";
 import SurveyResponses from "./pages/SurveyResponses";
-const App = (): React.JSX.Element => {
+const App = (): React.React.JSX.Element => {
   return (
     <CookiesProvider>
       <Router>
