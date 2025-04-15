@@ -109,7 +109,7 @@ export default function CreateSurvey() {
         })),
       };
 
-      const res = await fetch(`${server_url}/api/surveys`, {
+      const res = await fetch(`${server_url}/api/surveys/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

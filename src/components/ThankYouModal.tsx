@@ -28,7 +28,7 @@ const ThankYouModal = ({ onClose }: ThankYouModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-white  h-[60vh] shadow-xl p-6 md:max-w-[60vw] w-full flex flex-col justify-center items-center text-center relative">
+      <div className="bg-white  h-[90vh] md:h-[70vh] shadow-xl p-6 md:max-w-[60vw] w-full flex flex-col justify-center items-center text-center relative">
         <h1 className="text-3xl font-bold text-[#0190B0] mb-2">Thank you!</h1>
         <p className="text-lg text-gray-700 mb-6">{message}</p>
         <h2 className="font-semibold text-lg mb-2"> Want to create your own?</h2>

@@ -8,7 +8,9 @@ import {
 import { toast } from "react-hot-toast";
 import { server_url } from "../../config.json";
 
+// ---- TYPES ---- //
 type Option = { id: number; value: string };
+
 type Question = {
   id: number;
   name: string;
@@ -21,8 +23,8 @@ type Question = {
 };
 
 type SurveyData = {
-  survey_title: string;
-  survey_description?: string;
+  title: string;
+  description?: string;
   questions: Question[];
 };
 
@@ -33,11 +35,12 @@ type SurveyContextType = {
     answers: { [key: number]: any },
     files: File[],
     survey_id: string,
-    onSuccess?: () => void 
+    onSuccess?: () => void
   ) => Promise<void>;
   fetchSurveyQuestions: (surveyId: string) => void;
 };
 
+// ---- CONTEXT ---- //
 const SurveyContext = createContext<SurveyContextType | null>(null);
 
 export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
@@ -45,71 +48,39 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [fetchedSurveyIds, setFetchedSurveyIds] = useState<Set<string>>(
     new Set()
-  ); // Keep track of fetched survey IDs
+  );
+  console.log(survey)
 
-  // FETCH ALL EXISTING QUESTIONS
-  const fetchSurvey = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${server_url}/api/questions`);
-      const data = await res.json();
-
-      const formattedSurvey: SurveyData = {
-        survey_title: data.questions[0]?.survey_title || "Survey",
-        survey_description: data.questions[0]?.survey_description || "",
-        questions: data.questions
-          .map((q: any) => q.question)
-          .sort((a: any, b: any) => a.id - b.id),
-      };
-
-      setSurvey(formattedSurvey);
-    } catch (err) {
-      console.error("Error fetching survey:", err);
-      toast.error("Failed to load survey.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchSurvey();
-  }, []);
-
-  // FETCH QUESTIONS OF A PARTICULAR SURVEY
+  // ---- FETCH SPECIFIC SURVEY BY ID ---- 
   const fetchSurveyQuestions = useCallback(
     async (surveyId: string) => {
       if (fetchedSurveyIds.has(surveyId)) {
-        // Skip fetching if the survey's questions have already been fetched
-        console.log("Survey questions already fetched");
+        console.log("Survey already fetched.");
         return;
       }
 
       setLoading(true);
       try {
-        const res = await fetch(
-          `${server_url}/api/survey/${surveyId}/questions`
-        );
+        const res = await fetch(`${server_url}/api/questions/survey/${surveyId}`);
         const data = await res.json();
 
         if (res.status !== 200) {
-          toast.error(data.error || "Failed to load survey questions.");
+          toast.error(data.error || "Survey not found.");
           return;
         }
 
+        // Build frontend-friendly format
         const formattedSurvey: SurveyData = {
-          survey_title: data.survey_title || "Survey",
-          survey_description: data.survey_description || "",
-          questions: data.questions
-            .map((q: any) => q.question)
-            .sort((a: any, b: any) => a.id - b.id),
+          title: data.title || "Survey",
+          description: data.description || "",
+          questions: (data.questions || []).sort((a: any, b: any) => a.id - b.id),
         };
 
         setSurvey(formattedSurvey);
-        // Mark this survey as fetched
         setFetchedSurveyIds((prev) => new Set(prev).add(surveyId));
       } catch (err) {
-        console.error("Error fetching survey questions:", err);
-        toast.error("Failed to load survey questions.");
+        console.error("Error fetching survey:", err);
+        toast.error("Error loading survey.");
       } finally {
         setLoading(false);
       }
@@ -117,16 +88,17 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
     [fetchedSurveyIds]
   );
 
-  // SUBMIT ANSWERS TO SURVEY
+  // ---- SUBMIT SURVEY ---- //
   const submitSurvey = async (
     answers: { [key: number]: any },
     files: File[],
     survey_id: string,
-    onSuccess?: () => void // Add optional callback
+    onSuccess?: () => void
   ) => {
     const formData = new FormData();
     formData.append("survey_id", survey_id);
-  
+
+    // Append answers
     Object.entries(answers).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         value.forEach((v) => formData.append(`q_${key}`, v));
@@ -134,37 +106,49 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
         formData.append(`q_${key}`, value);
       }
     });
-  
+
+    // Append file uploads
     files.forEach((file) => {
       formData.append("certificates", file);
     });
-  
+
     try {
       const res = await fetch(`${server_url}/api/questions/responses`, {
         method: "PUT",
         body: formData,
       });
-  
+
       if (!res.ok) throw new Error("Failed to submit");
-  
-      toast.success("Survey submitted successfully");
-      if (onSuccess) onSuccess(); 
+
+      // toast.success("Survey submitted successfully.");
+      if (onSuccess) onSuccess();
     } catch (err) {
       console.error("Submit error:", err);
-      toast.error("Error submitting survey");
+      toast.error("Error submitting survey.");
     }
   };
-  
+
+  // ---- AUTO FETCH DEFAULT SURVEY (OPTIONAL) ---- //
+  useEffect(() => {
+    // Optional: you could call fetchSurveyQuestions("1") here
+    setLoading(false); // Don't auto-fetch, just stop loading spinner
+  }, []);
 
   return (
     <SurveyContext.Provider
-      value={{ survey, loading, submitSurvey, fetchSurveyQuestions }}
+      value={{
+        survey,
+        loading,
+        submitSurvey,
+        fetchSurveyQuestions,
+      }}
     >
       {children}
     </SurveyContext.Provider>
   );
 };
 
+// ---- HOOK ---- //
 export const useSurveyContext = () => {
   const context = useContext(SurveyContext);
   if (!context)

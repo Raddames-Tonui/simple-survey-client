@@ -6,11 +6,14 @@ import { useSurveyContext } from "../context/SurveyContext";
 import SubmissionModal from "../components/SubmissionModal";
 import ThankYouModal from "../components/ThankYouModal";
 import QuestionComponent from "../components/QuestionComponent";
+import NavigationControls from "./survey/NavigationControls";
+import ReviewSection from "./survey/ReviewSection";
 
 const SurveyForm = (): JSX.Element => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { survey, loading, submitSurvey, fetchSurveyQuestions } = useSurveyContext();
+  const { survey, loading, submitSurvey, fetchSurveyQuestions } =
+    useSurveyContext();
 
   const [answers, setAnswers] = useState<{ [id: number]: any }>({});
   const [files, setFiles] = useState<{ [id: number]: File[] }>({});
@@ -76,7 +79,9 @@ const SurveyForm = (): JSX.Element => {
 
   if (loading || !survey) return <Loader />;
 
-  const sortedQuestions = [...survey.questions].sort((a, b) => a.order - b.order);
+  const sortedQuestions = [...survey.questions].sort(
+    (a, b) => a.order - b.order
+  );
   const currentQuestion = sortedQuestions[currentStep];
   const isAnswered = isValid(answers[currentQuestion.id], currentQuestion.id);
   const progressPercent = ((currentStep + 1) / sortedQuestions.length) * 100;
@@ -137,8 +142,8 @@ const SurveyForm = (): JSX.Element => {
       <div className="max-w-2xl w-full mx-auto border border-gray-300 flex-1">
         <div className="w-full bg-gray-200 pt-4">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-center">{survey.survey_title}</h1>
-            <p className="text-gray-600 text-center">{survey.survey_description}</p>
+            <h1 className="text-2xl font-bold text-center">{survey.title}</h1>
+            <p className="text-gray-600 text-center">{survey.description}</p>
           </div>
           <div className="w-full h-2 bg-gray-200 mb-4">
             <div
@@ -158,122 +163,53 @@ const SurveyForm = (): JSX.Element => {
                   onAnswerChange={handleAnswerChange}
                   onFileChange={handleFileChange}
                 />
-                {currentQuestion.type === "file" && files[currentQuestion.id]?.length > 0 && (
-                  <div className="mt-3 space-y-2">
-                    <p className="text-sm font-semibold">Uploaded Files:</p>
-                    <ul className="list-disc list-inside text-sm">
-                      {files[currentQuestion.id].map((file, index) => (
-                        <li key={index} className="flex items-center justify-between">
-                          {file.name}
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveFile(currentQuestion.id, index)}
-                            className="text-red-600 text-xs ml-2"
+                {currentQuestion.type === "file" &&
+                  files[currentQuestion.id]?.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      <p className="text-sm font-semibold">Selected Files:</p>
+                      <ul className="list-disc list-inside text-sm">
+                        {files[currentQuestion.id].map((file, index) => (
+                          <li
+                            key={index}
+                            className="flex items-center justify-between"
                           >
-                            Remove
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                            {file.name}
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleRemoveFile(currentQuestion.id, index)
+                              }
+                              className="text-red-600 text-sm font-semibold ml-2"
+                            >
+                              Remove
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
               </div>
 
-              <div className="flex justify-end gap-5 mt-8">
-                {currentStep > 0 && (
-                  <button
-                    type="button"
-                    onClick={handlePrevious}
-                    className="px-6 py-2 border border-gray-400 hover:bg-gray-300 text-gray-800 disabled:opacity-50"
-                  >
-                    Back
-                  </button>
-                )}
-                {currentStep < sortedQuestions.length - 1 ? (
-                  <button
-                    type="button"
-                    onClick={handleNext}
-                    disabled={currentQuestion.required && !isAnswered}
-                    className={`px-6 py-2 text-white bottom-0 ${
-                      isAnswered || !currentQuestion.required
-                        ? "bg-[#24C8ED] hover:bg-[#0190B0]"
-                        : "bg-gray-400 cursor-not-allowed"
-                    }`}
-                  >
-                    {currentQuestion.required || isAnswered ? "Next" : "Skip"}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleReview}
-                    disabled={!areRequiredQuestionsAnswered()}
-                    className={`px-6 py-2 text-white ${
-                      areRequiredQuestionsAnswered()
-                        ? "bg-[#00A5CB] hover:bg-[#0190B0] font-semibold"
-                        : "bg-gray-400 cursor-not-allowed"
-                    }`}
-                  >
-                    Review Answers
-                  </button>
-                )}
-              </div>
+              <NavigationControls
+                currentStep={currentStep}
+                sortedQuestions={sortedQuestions}
+                currentQuestion={currentQuestion}
+                isAnswered={isAnswered}
+                handlePrevious={handlePrevious}
+                handleNext={handleNext}
+                handleReview={handleReview}
+                areRequiredQuestionsAnswered={areRequiredQuestionsAnswered}
+              />
             </>
           ) : (
-            <div>
-              <h2 className="text-xl font-bold mb-4 text-center text-[#0190B0]">
-                Review Your Answers
-              </h2>
-              <ul className="space-y-4 mb-6">
-                {sortedQuestions.map((q) => (
-                  <li key={q.id}>
-                    <strong className="block">{q.text}</strong>
-                    <div className="text-gray-700 mt-1">
-                      {q.type === "file" ? (
-                        files[q.id] && files[q.id].length > 0 ? (
-                          <ul className="list-disc list-inside">
-                            {files[q.id].map((file, index) => (
-                              <li key={index} className="flex justify-between items-center">
-                                {file.name}
-                                <button
-                                  type="button"
-                                  onClick={() => handleRemoveFile(q.id, index)}
-                                  className="text-red-600 text-xs ml-2"
-                                >
-                                  Remove
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <em>No file uploaded</em>
-                        )
-                      ) : Array.isArray(answers[q.id]) ? (
-                        answers[q.id].length > 0 ? answers[q.id].join(", ") : <em>No answer</em>
-                      ) : answers[q.id] ? (
-                        answers[q.id]
-                      ) : (
-                        <em>No answer</em>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <div className="flex justify-end gap-4">
-                <button
-                  type="button"
-                  onClick={() => setIsReview(false)}
-                  className="px-7 py-2 border border-gray-400 hover:bg-gray-300 text-gray-800 font-semibold"
-                >
-                  Edit Answers
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-[#00A5CB] hover:bg-[#0190B0] text-white font-semibold"
-                >
-                  Submit Survey
-                </button>
-              </div>
-            </div>
+            <ReviewSection
+              sortedQuestions={sortedQuestions}
+              answers={answers}
+              files={files}
+              handleRemoveFile={handleRemoveFile}
+              setIsReview={setIsReview}
+              handleSubmit={handleSubmit}
+            />
           )}
         </form>
       </div>

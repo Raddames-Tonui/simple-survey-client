@@ -84,7 +84,7 @@ const ActiveSurveyList = (): JSX.Element => {
             className="w-full h-40 object-cover"
           />
           <div className="p-4">
-            <h2 className="text-lg font-semibold mb-1">{survey.title}</h2>
+            <h2 className="text-lg font-semibold mb-1 capitalize">{survey.title}</h2>
             <p className="text-sm text-gray-600 mb-2">
               {survey.description.length > 100
                 ? `${survey.description.slice(0, 100)}...`
