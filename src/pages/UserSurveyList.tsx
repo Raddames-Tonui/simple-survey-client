@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { server_url } from "../../config.json";
-import Loader from "../components/Loader";
 import { Link } from "react-router-dom";
+import Loader from "../components/Loader";
+import { server_url } from "../../config.json";
+import { useCookies } from "react-cookie";
 
 type Survey = {
   id: number;
@@ -13,31 +14,39 @@ type Survey = {
   is_published: boolean;
 };
 
-const SurveyList = (): JSX.Element => {
-  const [surveys, setSurveys] = useState<Survey[]>([]);
+const UserSurveysList = (): JSX.Element => {
+  const [userSurveys, setUserSurveys] = useState<Survey[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch surveys from the API
-  const fetchSurveys = async () => {
+  const [cookies] = useCookies(["accessToken"]);
+  const token = cookies.accessToken;
+
+  const fetchUserSurveys = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${server_url}/api/surveys`);
+      const response = await fetch(`${server_url}/api/surveys/user-surveys`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       const data = await response.json();
 
       if (response.ok) {
-        setSurveys(data.surveys);
+        setUserSurveys(data.surveys);
       } else {
-        console.error(data.message || "Failed to fetch surveys.");
+        console.error(data.message || "Failed to fetch user surveys.");
       }
     } catch (error) {
-      console.error("Error fetching surveys:", error);
+      console.error("Error fetching user surveys:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchSurveys();
+    fetchUserSurveys();
   }, []);
 
   if (loading) {
@@ -48,12 +57,22 @@ const SurveyList = (): JSX.Element => {
     );
   }
 
-  if (surveys.length === 0) {
+  if (userSurveys.length === 0) {
     return (
-      <div className="flex justify-center items-center h-[80vh]">
-        <p className="text-[#0190B0] font-semibold text-lg">
-          There is no active survey available at the moment.
-        </p>
+      <div className="flex justify-center items-center h-screen">
+        <div className="flex flex-col justify-center items-center">
+          <p className="text-[#0190B0] font-semibold text-lg">
+            You haven’t created any surveys yet.
+          </p>
+          <button className="mt-5">
+            <Link
+              to="/survey/create"
+              className="px-6 py-2 bg-[#0190B0] text-white rounded hover:bg-[#017f9c] transition"
+            >
+              Create Survey
+            </Link>
+          </button>
+        </div>
       </div>
     );
   }
@@ -71,17 +90,17 @@ const SurveyList = (): JSX.Element => {
     <div className="md:mb-5 h-auto md:w-[80vw] lg:w-[70vw]">
       <div className="">
         <h1 className="px-3 md:px-0 text-xl font-bold mb-4  mt-6 text-[#0190B0]">
-          Existing Surveys
+          Your Surveys
         </h1>
         <hr className="text-[#0190B0] mb-4" />
       </div>
 
       <div className="bg-white p-6 min-h-[90vh] border border-gray-300">
         <div className=" grid md:grid-cols-3 gap-6 ">
-          {surveys.map((survey, index) => (
+          {userSurveys.map((survey, index) => (
             <div
               key={survey.id}
-              className="rounded-xl overflow-hidden shadow-md border border-gray-200 bg-white"
+              className="rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-white"
             >
               <img
                 src={surveyImages[index % surveyImages.length]}
@@ -90,12 +109,9 @@ const SurveyList = (): JSX.Element => {
               />
               <div className="p-4">
                 <h2 className="text-lg font-semibold mb-1">{survey.title}</h2>
-                {survey.description.length > 100 ? (
+                {survey.description && survey.description.length > 100 ? (
                   <p className="text-sm text-gray-600 mb-2">
                     {survey.description.slice(0, 100)}...
-                    <span className="text-blue-600 cursor-pointer ml-1 hover:underline">
-                      Read more
-                    </span>
                   </p>
                 ) : (
                   <p className="text-sm text-gray-600 mb-2">
@@ -115,18 +131,7 @@ const SurveyList = (): JSX.Element => {
                   >
                     {survey.is_published ? "Active" : "Closed"}
                   </span>
-
-                  {survey.is_published ? (
-                    <Link to={`/survey/${survey.id}/questions/`}>
-                      <button className="px-4 py-2 bg-[#0190B0] text-white text-sm rounded hover:bg-[#017a95] transition">
-                        Start Survey
-                      </button>
-                    </Link>
-                  ) : (
-                    <span className="text-sm text-gray-500 italic">
-                      Not Available
-                    </span>
-                  )}
+                  {/* Removed "Start Survey" button */}
                 </div>
               </div>
             </div>
@@ -137,4 +142,4 @@ const SurveyList = (): JSX.Element => {
   );
 };
 
-export default SurveyList;
+export default UserSurveysList;

@@ -15,11 +15,29 @@ const Layout = (): JSX.Element => {
         position="top-right"
         reverseOrder={false}
         toastOptions={{
+          // Global default toast style
           style: {
             zIndex: 100,
-            top: "12vh",
+            top: "0vh", 
+            borderRadius: "0", 
+          },
+          success: {
+            style: {
+              backgroundColor: "#28a745",
+              color: "white",
+              borderRadius: "0", 
+            },
+          },
+          error: {
+            // Error toast custom style
+            style: {
+              backgroundColor: "#dc3545", 
+              color: "white",
+              borderRadius: "0",
+            },
           },
         }}
+        containerClassName="mt-[10vh]"
       />
 
       <main className="flex-grow pt-[10vh] mx-auto min-h-screen min-w-full md:min-w-[80vw] lg:min-w-[70vw]">

@@ -1,12 +1,14 @@
 import React from "react";
-import SurveyList from "./SurveyList";
 import HeroSection from "../components/HeroSection";
+import ActiveSurveyList from "./ActiveSurveyList";
 
 const Home = (): JSX.Element => {
   return (
     <div className="min-h-screen ">
       <HeroSection />
-      <SurveyList />
+      <div className="">
+        <ActiveSurveyList />
+      </div>
     </div>
   );
 };

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { server_url } from "../../config.json";
 import Loader from "../components/Loader";
-import { FaDownload, FaEye  } from "react-icons/fa";
-
-
+import { FaDownload, FaEye } from "react-icons/fa";
+import { useCookies } from "react-cookie";
 
 interface Certificate {
   id: number;
@@ -11,15 +10,15 @@ interface Certificate {
   file_name: string;
 }
 
-interface QuestionResponse {
-  [key: string]: any; 
+interface SurveyResponse {
   response_id: number;
   certificates: Certificate[];
   date_responded: string;
+  [key: string]: any;
 }
 
 interface PaginatedResponse {
-  question_responses: QuestionResponse[];
+  survey_responses: SurveyResponse[];
   current_page: number;
   last_page: number;
   page_size: number;
@@ -27,17 +26,18 @@ interface PaginatedResponse {
 }
 
 const SurveyResponses: React.FC = () => {
-  const [responses, setResponses] = useState<QuestionResponse[]>([]);
+  const [responses, setResponses] = useState<SurveyResponse[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [emailFilter, setEmailFilter] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [cookies] = useCookies(["accessToken"]);
+  const token = cookies.accessToken;
 
   useEffect(() => {
     fetchResponses();
   }, [currentPage, emailFilter]);
 
-  // Fetch responses from the server
   const fetchResponses = async () => {
     setLoading(true);
     try {
@@ -45,9 +45,18 @@ const SurveyResponses: React.FC = () => {
       url.searchParams.append("page", currentPage.toString());
       if (emailFilter) url.searchParams.append("email_address", emailFilter);
 
-      const response = await fetch(url.toString());
+      const response = await fetch(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch responses");
+      }
+
       const data: PaginatedResponse = await response.json();
-      setResponses(data.question_responses);
+      setResponses(data.survey_responses);
       setCurrentPage(data.current_page);
       setTotalPages(data.last_page);
     } catch (error) {
@@ -65,34 +74,41 @@ const SurveyResponses: React.FC = () => {
   const handlePagination = (page: number) => {
     setCurrentPage(page);
   };
+  console.log(responses)
 
   return (
-    <div className="container mx-auto my-4 md:my-6">
-      <h1 className="text-[#0190B0] font-semibold text-xl mb-2">
-        Survey Responses
-      </h1>
+    <div className="md:mb-5 h-auto md:w-[80vw] lg:w-[70vw]">
+      <div className="">
+        <h1 className="px-3 md:px-0 text-xl font-bold mb-4  mt-6 text-[#0190B0]">
+          Survey Responses
+        </h1>
+        <hr className="text-[#0190B0] mb-4" />
+      </div>
 
-      <div className="mb-4">
+      <div className="mb-4 flex items-center gap-2">
+        <p className="px-3 md:px-0  whitespace-nowrap w-fit  font-semibold text-md">
+          Filter by Email:
+        </p>
         <input
           type="text"
-          placeholder="Filter by Email"
+          placeholder="Enter Email"
           value={emailFilter}
           onChange={handleEmailFilterChange}
-          className="p-2 border border-gray-300 rounded-md w-full md:w-1/2"
+          className="p-2 border border-gray-300 rounded-md w-full"
         />
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-[70vh]">
+        <div className="flex justify-center items-center h-[50vh]">
           <Loader />
         </div>
       ) : (
-        <div className="bg-white p-5 border border-gray-300 shadow-md">
+        <div className="min-h-screen  bg-white p-5 border border-gray-300 ">
           <div className="space-y-4">
             {responses.map((response) => (
               <div
                 key={response.response_id}
-                className="p-4 border border-gray-200 "
+                className="p-4 border border-gray-200 hover:bg-gray-100"
               >
                 {Object.entries(response).map(([key, value]) => {
                   if (key === "certificates" || key === "response_id")
@@ -102,60 +118,64 @@ const SurveyResponses: React.FC = () => {
                       <strong className="capitalize">
                         {key.replace(/_/g, " ")}:
                       </strong>{" "}
-                      {value}
+                      {value?.toString()}
                     </p>
                   );
                 })}
 
-                <div className="mt-2">
-                  <strong>Certificates:</strong>
-                  <ul className="list-disc ml-6 space-y-1">
-                    {response.certificates.map((cert: Certificate) => (
-                      <li key={cert.id} className="flex  items-center gap-2">
-                        <span>{cert.file_name}</span>
-                        <a
-                          href={cert.file_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <FaEye className="w-5 h-5 text-blue-600 hover:text-blue-800" />
-                        </a>
-                        <button
-                          href={`${server_url}/api/questions/responses/certificates/${cert.id}`}
-                          download={cert.file_name}
-                        >
-                          <FaDownload className="w-5 h-5 text-green-600 hover:text-green-800" />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-
-                <div className="mt-6 flex justify-between">
-            <button
-              onClick={() => handlePagination(currentPage - 1)}
-              disabled={currentPage <= 1}
-              className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
-            >
-              Previous
-            </button>
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => handlePagination(currentPage + 1)}
-              disabled={currentPage >= totalPages}
-              className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
-            >
-              Next
-            </button>
-          </div>
+                {response.certificates?.length > 0 && (
+                  <div className="mt-2">
+                    <strong>Certificates:</strong>
+                    <ul className="list-disc ml-6 space-y-1">
+                      {response.certificates.map((cert) => (
+                        <li key={cert.id} className="flex items-center gap-2 md:gap-4 font-semibold">
+                          <span>{cert.file_name}</span>
+                          <a
+                            href={cert.file_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline" 
+                          >
+                            <FaEye className="inline mr-1"/>
+                            View
+                          </a>
+                          <a
+                            href={`${server_url}/api/questions/responses/certificates/${cert.id}`}
+                            download={cert.file_name}
+                            // className="buttonDownload"
+                            className="text-green-600 hover:underline"
+                          >
+                            <FaDownload className="inline mr-1" />
+                            Download
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ))}
-          </div>
 
-        
+            <div className="mt-6 flex justify-between items-center">
+              <button
+                onClick={() => handlePagination(currentPage - 1)}
+                disabled={currentPage <= 1}
+                className=" py-2 px-5 text-white  w-32 bg-[#00A5CB] hover:bg-[#0190B0] font-semibold   disabled:bg-gray-400"
+              >
+                Previous
+              </button>
+              <span className="font-semibold">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => handlePagination(currentPage + 1)}
+                disabled={currentPage >= totalPages}
+                className=" py-2 px-5 text-white  w-32 bg-[#00A5CB] hover:bg-[#0190B0] font-semibold   disabled:bg-gray-400"
+              >
+                Next
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

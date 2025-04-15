@@ -21,7 +21,7 @@ const Login = (): JSX.Element => {
   };
 
   return (
-    <div className="h-[90vh] flex items-center justify-center py-12 px-6 lg:px-8">
+    <div className="h-screen flex items-center justify-center py-12 px-6 lg:px-8">
       <div className="bg-white mx-auto flex flex-col items-center justify-center px-6 max-w-md w-full py-6 rounded-md border border-gray-300">
         <NavLink to="/">
           <img
@@ -30,7 +30,7 @@ const Login = (): JSX.Element => {
             className="mx-auto h-12 w-auto"
           />
         </NavLink>
-        <h1 className="text-2xl font-bold pb-3 pt-2 text-[#0190B0]">JazaForm</h1>
+        <h1 className="text-2xl font-bold pt-2 text-[#0190B0]">JazaForm</h1>
         <h2 className="mt-3 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to your account
         </h2>
@@ -52,7 +52,7 @@ const Login = (): JSX.Element => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="block w-full rounded-md border-0 py-2 pl-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+                className="block w-full rounded-md border-0 py-2 pl-3 text-gray-900  ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                 placeholder="name@example.com"
               />
             </div>
@@ -84,7 +84,7 @@ const Login = (): JSX.Element => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="block w-full rounded-md border-0 py-2 pl-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+                className="block w-full rounded-md border-0 py-2 pl-3 text-gray-900  ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                 placeholder="Password"
               />
             </div>

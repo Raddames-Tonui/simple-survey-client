@@ -1,188 +1,199 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { server_url } from "../../config.json";
 import Loader from "../components/Loader";
+import toast from "react-hot-toast";
+import { server_url } from "../../config.json";
 
-// Defining the User type
+// Define User type
 interface User {
   id: string;
   email: string;
   role: string;
 }
 
-// Defining the AuthContextType to type the context value
+// Define Context type
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => void;
-  signUp: (email: string, password: string, role: string) => void;
-  logout: () => void;
-  refresh: () => void;
+  login: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, role: string) => Promise<void>;
+  logout: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
-// Defining the AuthProviderProps to type the children of the provider
+// Props type for Provider
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-// Creating the context for auth functionality
+// Create Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Provider Component
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // States to manage user info, loading status, and cookies
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  // Managing cookies
   const [cookies, setCookie, removeCookie] = useCookies([
     "accessToken",
     "refreshToken",
     "user",
   ]);
-
-  // Navigation hook to navigate to different routes
   const navigate = useNavigate();
 
-  // useEffect to check if there is a stored user and token in cookies
   useEffect(() => {
     const storedUser = cookies.user;
     const storedAccessToken = cookies.accessToken;
-    const storedRefreshToken = cookies.refreshToken;
+    // console.log("Stored access token:", storedAccessToken); 
 
-    // If user and tokens exist in cookies, set the user state
-    if (storedUser && storedAccessToken && storedRefreshToken) {
+    if (storedUser && storedAccessToken) {
       try {
-        if (typeof storedUser === "string") {
-          const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser); // Set user info from cookie
-        } else {
-          setUser(storedUser); // In case the cookie is already an object
-        }
-      } catch (e) {
-        console.error("Error parsing user data from cookies:", e);
-        setUser(null); // If there is an error, set user to null
+        const parsedUser =
+          typeof storedUser === "string" ? JSON.parse(storedUser) : storedUser;
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Failed to parse user cookie:", error);
+        setUser(null);
       }
     }
-    setIsLoading(false); // Set loading state to false after checking cookies
+
+    setIsLoading(false);
   }, [cookies]);
 
-  // LOGIN function to authenticate user and store tokens in cookies
+  // Login
   const login = async (email: string, password: string) => {
-    // Making a POST request to the server to authenticate the user
-    const response = await fetch(`${server_url}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch(`${server_url}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // If login fails, log the error
-    if (!response.ok) {
-      const data = await response.json();
-      console.error("Login failed", data.message);
-      return;
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Login failed");
+      }
+
+      const { access_token, refresh_token, user } = await res.json();
+
+      setCookie("accessToken", access_token, {
+        path: "/",
+        secure: true,
+        sameSite: "None",
+      });
+      setCookie("refreshToken", refresh_token, {
+        path: "/",
+        secure: true,
+        sameSite: "None",
+      });
+      setCookie("user", JSON.stringify(user), {
+        path: "/",
+        secure: true,
+        sameSite: "None",
+      });
+
+      setUser(user);
+      navigate("/survey/create");
+    } catch (error: any) {
+      toast.error(error.message || "Login error");
+      console.error("Login error:", error);
     }
-
-    // Extracting tokens and user data from the response
-    const data = await response.json();
-    const { access_token, refresh_token, user } = data;
-
-    // Storing tokens and user info in cookies
-    setCookie("accessToken", access_token, { path: "/" });
-    setCookie("refreshToken", refresh_token, { path: "/" });
-    setCookie("user", JSON.stringify(user), { path: "/" });
-
-    // Setting user in the state and redirecting to the response page
-    setUser(user);
-    navigate("/response");
   };
 
-  // LOGOUT function to remove tokens and user from cookies
-  const logout = () => {
-    // Removing cookies to log the user out
-    removeCookie("accessToken", { path: "/" });
-    removeCookie("refreshToken", { path: "/" });
-    removeCookie("user", { path: "/" });
+  // Sign Up
+  const signUp = async (name: string, email: string, password: string) => {
+    try {
+      const res = await fetch(`${server_url}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    // Setting user state to null to log the user out
-    setUser(null);
+      const data = await res.json();
 
-    // Redirecting to the home page after logout
-    navigate("/");
+      if (!res.ok) {
+        toast.error(data.message || "Signup failed");
+        return;
+      }
+
+      const { access_token, refresh_token, user } = data;
+
+      // Set cookies
+      setCookie("accessToken", access_token, { path: "/" });
+      setCookie("refreshToken", refresh_token, { path: "/" });
+      setCookie("user", JSON.stringify(user), { path: "/" });
+
+      setUser(user);
+      toast.success("Success! You’re Now Registered");
+
+      // Trigger auto-login
+      await login(email, password);
+    } catch (err) {
+      console.error("Signup error:", err);
+      toast.error("Signup failed");
+    }
   };
 
-  // REFRESH function to refresh the access token using the refresh token
+  // Logout
+  const logout = async () => {
+    try {
+      const res = await fetch(`${server_url}/auth/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        toast.success("See you soon! 👋");
+      } else {
+        console.warn("Backend logout failed");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      removeCookie("accessToken", { path: "/" });
+      removeCookie("refreshToken", { path: "/" });
+      removeCookie("user", { path: "/" });
+      setUser(null);
+      navigate("/");
+    }
+  };
+
+  // Refresh Token
   const refresh = async () => {
-    // Making a request to the server to refresh the access token
-    const response = await fetch(`${server_url}/auth/token/refresh`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${cookies.refreshToken}`, // Using the refresh token for authorization
-      },
-    });
+    try {
+      const res = await fetch(`${server_url}/auth/token/refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
 
-    // If refresh fails, log out the user
-    if (!response.ok) {
-      const data = await response.json();
-      console.error("Token refresh failed:", data.message);
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Refresh failed:", data.message);
+        logout();
+        return;
+      }
+
+      const { access_token } = data;
+      setCookie("accessToken", access_token, { path: "/" });
+    } catch (error) {
+      console.error("Refresh error:", error);
       logout();
-      return;
     }
-
-    // If refresh is successful, get the new access token and update the cookie
-    const data = await response.json();
-    const { access_token } = data;
-
-    // Update the access token in cookies
-    setCookie("accessToken", access_token, { path: "/" });
-  };
-
-  // SIGNUP function to register a new user
-  const signUp = async (email: string, password: string, role: string) => {
-    // Making a POST request to the server to register the user
-    const response = await fetch(`${server_url}/auth/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password, role }),
-    });
-
-    // If signup fails, log the error
-    if (!response.ok) {
-      const data = await response.json();
-      console.error("Signup failed", data.message);
-      return;
-    }
-
-    // Extracting tokens and user data from the response
-    const data = await response.json();
-    const { access_token, refresh_token, user } = data;
-
-    // Storing tokens and user info in cookies
-    setCookie("accessToken", access_token, { path: "/" });
-    setCookie("refreshToken", refresh_token, { path: "/" });
-    setCookie("user", JSON.stringify(user), { path: "/" });
-
-    // Setting user in the state and redirecting to the response page
-    setUser(user);
-    navigate("/response");
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, refresh, signUp, isLoading }}
+      value={{ user, isLoading, login, signUp, logout, refresh }}
     >
-      {/* If still loading, show the loader, else render the children */}
       {!isLoading ? children : <Loader />}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook to use the AuthContext
+// Custom hook
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {

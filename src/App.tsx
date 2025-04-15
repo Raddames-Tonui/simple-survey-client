@@ -14,12 +14,12 @@ import SignUpForm from "./auth/SignUpForm";
 import PrivateRoute from "./components/PrivateRoute";
 
 import Home from "./pages/Home";
-import Survey from "./pages/Survey";
-import SurveyResponses from "./pages/SurveyResponses";
 import NoPage from "./pages/NoPage";
+import SurveyForm from "./pages/SurveyForm";
+import SurveyList from "./pages/SurveyList";
 import CreateSurvey from "./pages/CreateSurvey";
-import SurveyQuestions from "./pages/SurveyQuestions";
-
+import UserSurveyList from "./pages/UserSurveyList";
+import SurveyResponses from "./pages/SurveyResponses";
 const App = (): JSX.Element => {
   return (
     <CookiesProvider>
@@ -27,20 +27,27 @@ const App = (): JSX.Element => {
         <AuthProvider>
           <SurveyProvider>
             <Routes>
+              {/* Routes for authenticated users */}
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
-                <Route path="/survey" element={<Survey />} />
-                <Route
-                  path="/survey/:id/questions"
-                  element={<SurveyQuestions />}
-                />
+                <Route path="/survey/list" element={<SurveyList />} />
+                <Route path="/survey/:id/questions" element={<SurveyForm />} />
                 <Route path="*" element={<NoPage />} />
+                {/* Private routes for logged-in users */}
                 <Route element={<PrivateRoute />}>
-                  <Route path="/create" element={<CreateSurvey />} />
-                  <Route path="/response" element={<SurveyResponses />} />
+                  <Route path="/survey/create" element={<CreateSurvey />} />
+                  <Route
+                    path="/survey/user-surveys"
+                    element={<UserSurveyList />}
+                  />
+                  <Route
+                    path="/survey/response"
+                    element={<SurveyResponses />}
+                  />
                 </Route>
               </Route>
 
+              {/* Auth routes */}
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="login" element={<Login />} />
                 <Route path="signup" element={<SignUpForm />} />
