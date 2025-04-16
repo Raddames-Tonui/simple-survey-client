@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { BiSolidBadgeCheck } from "react-icons/bi";
 import { useAuth } from "../context/AuthContext";
 
-const Login = (): JSX.Element => {
+const Login = (): React.JSX.Element => {
   const { login } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -34,7 +34,7 @@ const Login = (): JSX.Element => {
         <h2 className="mt-3 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to your account
         </h2>
-       
+
         <form className="space-y-6 mt-8 w-full" onSubmit={handleSubmit}>
           <div>
             <label
@@ -100,7 +100,7 @@ const Login = (): JSX.Element => {
           </div>
         </form>
         <p className="text-center mt-6 text-gray-600 text-md">
-          Not a member?{' '}
+          Not a member?{" "}
           <Link
             to="/auth/signup"
             className="text-[#24C8ED] hover:text-[#4A8A98 transition duration-300"

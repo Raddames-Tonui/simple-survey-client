@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const SignUpForm = (): JSX.Element => {
+const SignUpForm = (): React.JSX.Element => {
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -43,7 +43,10 @@ const SignUpForm = (): JSX.Element => {
 
         <form className="space-y-4 mt-8 w-full" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-900">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-900"
+            >
               Full Name
             </label>
             <div className="mt-2">
@@ -61,7 +64,10 @@ const SignUpForm = (): JSX.Element => {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-900">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-900"
+            >
               Email address
             </label>
             <div className="mt-2">
@@ -79,7 +85,10 @@ const SignUpForm = (): JSX.Element => {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-900">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-900"
+            >
               Password
             </label>
             <div className="mt-2">
@@ -97,7 +106,10 @@ const SignUpForm = (): JSX.Element => {
           </div>
 
           <div>
-            <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-900">
+            <label
+              htmlFor="confirm-password"
+              className="block text-sm font-medium text-gray-900"
+            >
               Confirm Password
             </label>
             <div className="mt-2">

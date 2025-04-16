@@ -13,7 +13,7 @@ type Survey = {
   is_published: boolean;
 };
 
-const ActiveSurveyList = (): JSX.Element => {
+const ActiveSurveyList = (): React.JSX.Element => {
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -29,7 +29,7 @@ const ActiveSurveyList = (): JSX.Element => {
         );
         setSurveys(publishedSurveys.slice(0, 3));
       } else {
-        console.error("Error fetching surveys:", error);
+        console.error("Error fetching surveys:");
       }
     } catch (error) {
       console.error("Error fetching surveys:", error);
@@ -54,7 +54,7 @@ const ActiveSurveyList = (): JSX.Element => {
     return (
       <div className="flex justify-center items-center h-[40vh] mb-10">
         <p className="text-[#0190B0] font-semibold text-lg">
-          There is  no active survey available currently.
+          There is no active survey available currently.
         </p>
       </div>
     );
@@ -82,7 +82,9 @@ const ActiveSurveyList = (): JSX.Element => {
             className="w-full h-40 object-cover"
           />
           <div className="p-4">
-            <h2 className="text-lg font-semibold mb-1 capitalize">{survey.title}</h2>
+            <h2 className="text-lg font-semibold mb-1 capitalize">
+              {survey.title}
+            </h2>
             <p className="text-sm text-gray-600 mb-2">
               {survey.description.length > 100
                 ? `${survey.description.slice(0, 100)}...`

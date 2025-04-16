@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FiMenu, FiX } from "react-icons/fi";
 
-const Navbar = (): JSX.Element => {
+const Navbar = (): React.JSX.Element => {
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

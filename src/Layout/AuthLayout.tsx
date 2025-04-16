@@ -1,8 +1,7 @@
-import React from "react";
 import { Toaster } from "react-hot-toast";
 import { Outlet } from "react-router-dom";
 
-const AuthLayout = (): JSX.Element => {
+const AuthLayout = (): React.JSX.Element => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-100">
       <Toaster

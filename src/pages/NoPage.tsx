@@ -1,8 +1,7 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const NoPage = (): JSX.Element => {
+const NoPage = (): React.JSX.Element => {
   const { user } = useAuth();
 
   return (

@@ -1,6 +1,5 @@
-// ...imports
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import { useSurveyContext } from "../context/SurveyContext";
 import SubmissionModal from "../components/SubmissionModal";
@@ -9,9 +8,8 @@ import NavigationControls from "./survey/NavigationControls";
 import ReviewSection from "./survey/ReviewSection";
 import QuestionComponent from "./survey/QuestionComponent";
 
-const SurveyForm = (): JSX.Element => {
+const SurveyForm = (): React.JSX.Element => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { survey, loading, submitSurvey, fetchSurveyQuestions } =
     useSurveyContext();
 
@@ -50,11 +48,12 @@ const SurveyForm = (): JSX.Element => {
     }
   };
 
-  const handleRemoveFile = (qid: number, index: number) => {
+  const handleRemoveFile = (qid: string, index: number) => {
+    const questionId = Number(qid);
     setFiles((prev) => {
-      const updatedFiles = [...(prev[qid] || [])];
+      const updatedFiles = [...(prev[questionId] || [])];
       updatedFiles.splice(index, 1);
-      return { ...prev, [qid]: updatedFiles };
+      return { ...prev, [questionId]: updatedFiles };
     });
   };
 
@@ -84,9 +83,11 @@ const SurveyForm = (): JSX.Element => {
       </div>
     );
 
+  // ✅ FIXED HERE: removed typo and closed sort properly
   const sortedQuestions = [...survey.questions].sort(
     (a, b) => a.order - b.order
   );
+
   const currentQuestion = sortedQuestions[currentStep];
   const isAnswered = isValid(answers[currentQuestion.id], currentQuestion.id);
   const progressPercent = ((currentStep + 1) / sortedQuestions.length) * 100;
@@ -118,8 +119,8 @@ const SurveyForm = (): JSX.Element => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // ✅ Moved logic into its own function
+  const submitFormLogic = () => {
     setIsSubmitting(true);
 
     const transformedAnswers: { [id: number]: string } = {};
@@ -152,17 +153,22 @@ const SurveyForm = (): JSX.Element => {
     });
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitFormLogic();
+  };
+
   return (
-    <div className="mx-auto min-h-[90vh] md:my-5   bg-white md:border md:border-gray-300 flex flex-col">
-      <div className=" w-full mx-auto  flex-1">
-        <div className="w-full min-h-[12vh] bg-gray-200  relative">
-          <div className="flex flex-col py-5  justify-center items-center">
+    <div className="mx-auto min-h-[90vh] md:my-5 bg-white md:border md:border-gray-300 flex flex-col">
+      <div className="w-full mx-auto flex-1">
+        <div className="w-full min-h-[12vh] bg-gray-200 relative">
+          <div className="flex flex-col py-5 justify-center items-center">
             <h1 className="text-2xl font-bold text-center text-gray-800">
-              {survey.title}
+              {survey.survey_title}
             </h1>
-            <p className="text-gray-600 text-center">{survey.description}</p>
+            <p className="text-gray-600 text-center">{survey.survey_description}</p>
           </div>
-          <div className="absolute bottom-0 w-full h-2 bg-gray-200 ">
+          <div className="absolute bottom-0 w-full h-2 bg-gray-200">
             <div
               className="h-2 bg-[#24C8ED] transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
@@ -194,7 +200,7 @@ const SurveyForm = (): JSX.Element => {
                             <button
                               type="button"
                               onClick={() =>
-                                handleRemoveFile(currentQuestion.id, index)
+                                handleRemoveFile(currentQuestion.id.toString(), index)
                               }
                               className="text-red-600 text-sm font-semibold ml-2"
                             >
@@ -209,7 +215,10 @@ const SurveyForm = (): JSX.Element => {
 
               <NavigationControls
                 currentStep={currentStep}
-                sortedQuestions={sortedQuestions}
+                sortedQuestions={sortedQuestions.map((q) => ({
+                  ...q,
+                  id: q.id.toString(),
+                }))}
                 currentQuestion={currentQuestion}
                 isAnswered={isAnswered}
                 handlePrevious={handlePrevious}
@@ -220,12 +229,15 @@ const SurveyForm = (): JSX.Element => {
             </>
           ) : (
             <ReviewSection
-              sortedQuestions={sortedQuestions}
+              sortedQuestions={sortedQuestions.map((q) => ({
+                ...q,
+                id: q.id.toString(),
+              }))}
               answers={answers}
               files={files}
               handleRemoveFile={handleRemoveFile}
               setIsReview={setIsReview}
-              handleSubmit={handleSubmit}
+              handleSubmit={submitFormLogic}
             />
           )}
         </form>

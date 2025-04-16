@@ -13,7 +13,7 @@ type Survey = {
   is_published: boolean;
 };
 
-const SurveyList = (): JSX.Element => {
+const SurveyList = (): React.JSX.Element => {
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 

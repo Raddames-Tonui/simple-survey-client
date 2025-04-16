@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Layout from "./Layout/Layout";
 import AuthLayout from "./Layout/AuthLayout";
@@ -20,7 +19,7 @@ import SurveyList from "./pages/SurveyList";
 import CreateSurvey from "./pages/CreateSurvey";
 import UserSurveyList from "./pages/UserSurveyList";
 import SurveyResponses from "./pages/SurveyResponses";
-const App = (): JSX.Element => {
+const App = (): React.JSX.Element => {
   return (
     <CookiesProvider>
       <Router>
