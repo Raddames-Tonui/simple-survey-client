@@ -1,54 +1,85 @@
-# React + TypeScript + Vite
+# Simple Survey Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple, clean survey application built with **React**, **TypeScript**, and **TailwindCSS**. Users can fill in surveys, upload certificates (PDF), and submit responses securely. Authenticated access is handled using **JWT tokens**.
 
-Currently, two official plugins are available:
+🔗 **Live site:** [https://simple-survey-client-alpha.vercel.app/survey/user-surveys](https://simple-survey-client-alpha.vercel.app/survey/user-surveys)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🔗 **Backend API:** [https://simple-survey-api-fqyt.onrender.com](https://simple-survey-api-fqyt.onrender.com)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features
+- 🔐 JWT-based Authentication
+- 📋 Survey answering with multiple input types
+- 🧾 File (PDF certificate) uploads
+- 💾 LocalStorage support for resuming surveys
+- 🧠 Review screen before final submission
+- 🎯 Final confirmation page after submitting
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+---
+
+## Technologies Used
+- **React** (Frontend library)
+- **TypeScript** (Static typing)
+- **TailwindCSS** (Utility-first styling)
+- **JWT** (Authentication)
+- **Vercel** (Deployment)
+
+---
+
+## Project Structure
+```
+src/
+├── auth/             # Authentication logic and helpers
+├── components/       # Reusable UI components
+├── context/          # React Context for survey and auth
+├── layout/           # Layout components and wrappers
+├── pages/            # Main page components
+├── utils/            # Helper functions
+├── config.json       # API configuration
+├── main.tsx          # App entry
+└── app.tsx           # Routes
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Sample config.json
+```json
+{
+  "server_url": "https://simple-survey-api-fqyt.onrender.com"
+}
 ```
+
+---
+
+## Deployment Guide (Vercel)
+
+### 1. Push to GitHub
+```bash
+git init
+git add .
+git commit -m "initial commit"
+git remote add origin https://github.com/<your-username>/<repo-name>.git
+git push -u origin main
+```
+
+### 2. Deploy to Vercel
+1. Go to [https://vercel.com](https://vercel.com)
+2. Import your GitHub repository
+3. Set up build settings if needed (`npm run build`)
+4. Add environment variables (if any)
+5. Deploy
+
+> ✅ Make sure `config.json` has the correct API URL.
+
+---
+
+## Contribution & Feedback
+Pull requests are welcome! For major changes, open an issue first to discuss what you’d like to change.
+
+---
+
+## License
+[MIT](LICENSE)
+
+---
+
+Made with ❤️ by Raddames Tonui
