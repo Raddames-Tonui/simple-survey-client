@@ -29,7 +29,7 @@ const ActiveSurveyList = (): React.JSX.Element => {
         );
         setSurveys(publishedSurveys.slice(0, 3));
       } else {
-        console.error("Error fetching surveys:", error);
+        console.error("Error fetching surveys:");
       }
     } catch (error) {
       console.error("Error fetching surveys:", error);

@@ -20,11 +20,13 @@ type Question = {
   required: boolean;
   options?: Option[];
   survey_id?: number;
+  order: number;
 };
 
 type SurveyData = {
-  title: string;
-  description?: string;
+  survey_title: string; 
+  survey_description?: string; 
+  description?: string; 
   questions: Question[];
 };
 
@@ -74,7 +76,7 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
 
         // Build frontend-friendly format
         const formattedSurvey: SurveyData = {
-          title: data.title || "Survey",
+          survey_title: data.title || "Survey",
           description: data.description || "",
           questions: (data.questions || []).sort(
             (a: any, b: any) => a.id - b.id
@@ -103,11 +105,11 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
   ) => {
     const formData = new FormData();
     formData.append("survey_id", survey_id);
-  
+
     if (email) {
       formData.append("email", email);
     }
-  
+
     // Append answers
     Object.entries(answers).forEach(([key, value]) => {
       if (Array.isArray(value)) {
@@ -116,27 +118,26 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
         formData.append(`q_${key}`, value);
       }
     });
-  
+
     // Append file uploads
     files.forEach((file) => {
       formData.append("certificates", file);
     });
-  
+
     try {
       const res = await fetch(`${server_url}/api/questions/responses`, {
         method: "PUT",
         body: formData,
       });
-  
+
       if (!res.ok) throw new Error("Failed to submit");
-  
+
       if (onSuccess) onSuccess();
     } catch (err) {
       console.error("Submit error:", err);
       // toast.error("Error submitting survey.");
     }
   };
-  
 
   // ---- AUTO FETCH DEFAULT SURVEY (OPTIONAL) ---- //
   useEffect(() => {
