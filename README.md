@@ -1,6 +1,6 @@
 # Simple Survey Client
 
-A simple, clean survey application built with **React**, **TypeScript**, and **TailwindCSS**. Users can fill in surveys, upload certificates (PDF), and submit responses securely. Authenticated access is handled using **JWT tokens**.
+A simple, clean survey application built with **React**, **TypeScript**, and **TailwindCSS**. Users can create and fill in surveys, upload certificates (PDF), and submit responses. Authenticated access is handled using **JWT tokens**.
 
 🔗 **Live site:** [https://simple-survey-client-alpha.vercel.app/survey/user-surveys](https://simple-survey-client-alpha.vercel.app/survey/user-surveys)
 
@@ -10,7 +10,7 @@ A simple, clean survey application built with **React**, **TypeScript**, and **T
 
 ## Features
 - 🔐 JWT-based Authentication
-- 📋 Survey answering with multiple input types
+- 📋 Survey creation and answering with multiple input types
 - 🧾 File (PDF certificate) uploads
 - 💾 LocalStorage support for resuming surveys
 - 🧠 Review screen before final submission
