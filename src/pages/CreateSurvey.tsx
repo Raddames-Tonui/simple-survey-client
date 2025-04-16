@@ -214,7 +214,7 @@ export default function CreateSurvey() {
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full border border-gray-300 px-3 py-2  border border-gray-300 px-3 py-2 rounded-sm hover:border-[#00A5CB] focus:outline-none  focus:border-[#00A5CB]  "
+            className="w-full border border-gray-300 px-3 py-2  rounded-sm hover:border-[#00A5CB] focus:outline-none  focus:border-[#00A5CB]  "
           />
         </div>
 
@@ -223,7 +223,7 @@ export default function CreateSurvey() {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border border-gray-300 px-3 py-2  border border-gray-300 px-3 py-2 rounded-sm hover:border-[#00A5CB] focus:outline-none  focus:border-[#00A5CB]"
+            className="w-full border border-gray-300 px-3 py-2  rounded-sm hover:border-[#00A5CB] focus:outline-none  focus:border-[#00A5CB]"
           />
         </div>
 
@@ -308,7 +308,7 @@ export default function CreateSurvey() {
 
         <button
           onClick={handleAddQuestion}
-          className="border border-[#00A5CB] hover:bg-[#0190B0] text-white px-4 py-2 font-semibold mb-6 block"
+          className="border bg-[#00A5CB] hover:bg-[#0190B0] text-white px-4 py-2 font-semibold mb-6 block"
         >
           Add Question
         </button>
