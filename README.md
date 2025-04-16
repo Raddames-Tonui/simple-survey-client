@@ -11,6 +11,7 @@ A simple, clean survey application built with **React**, **TypeScript**, and **T
 ## Features
 - 🔐 JWT-based Authentication
 - 📋 Survey creation and answering with multiple input types
+- 📄 Viewing survey responses
 - 🧾 File (PDF certificate) uploads
 - 💾 LocalStorage support for resuming surveys
 - 🧠 Review screen before final submission
@@ -63,10 +64,9 @@ git push -u origin main
 
 ### 2. Deploy to Vercel
 1. Go to [https://vercel.com](https://vercel.com)
-2. Import your GitHub repository
+2. Import simple survey client GitHub repository
 3. Set up build settings if needed (`npm run build`)
-4. Add environment variables (if any)
-5. Deploy
+4.Deploy
 
 > ✅ Make sure `config.json` has the correct API URL.
 
