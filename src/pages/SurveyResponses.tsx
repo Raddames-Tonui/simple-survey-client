@@ -74,7 +74,7 @@ const SurveyResponses: React.FC = () => {
   const handlePagination = (page: number) => {
     setCurrentPage(page);
   };
-  console.log(responses)
+  // console.log(responses)
 
   return (
     <div className="md:mb-5 h-auto md:w-[80vw] lg:w-[70vw]">
@@ -113,12 +113,22 @@ const SurveyResponses: React.FC = () => {
                 {Object.entries(response).map(([key, value]) => {
                   if (key === "certificates" || key === "response_id")
                     return null;
+
                   return (
                     <p key={key}>
                       <strong className="capitalize">
-                        {key.replace(/_/g, " ")}:
+                        {key.replace(/_/g, " ")}:{" "}
+                        {/* replaces underscores with spaces in keys */}
                       </strong>{" "}
-                      {value?.toString()}
+                      {key === "date_responded"
+                        ? new Date(value).toLocaleString(undefined, {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : value?.toString()}
                     </p>
                   );
                 })}
@@ -128,15 +138,18 @@ const SurveyResponses: React.FC = () => {
                     <strong>Certificates:</strong>
                     <ul className="list-disc ml-6 space-y-1">
                       {response.certificates.map((cert) => (
-                        <li key={cert.id} className="flex items-center gap-2 md:gap-4 font-semibold">
+                        <li
+                          key={cert.id}
+                          className="flex items-center gap-2 md:gap-4 font-semibold"
+                        >
                           <span>{cert.file_name}</span>
                           <a
                             href={cert.file_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline" 
+                            className="text-blue-600 hover:underline"
                           >
-                            <FaEye className="inline mr-1"/>
+                            <FaEye className="inline mr-1" />
                             View
                           </a>
                           <a
