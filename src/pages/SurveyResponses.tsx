@@ -41,7 +41,9 @@ const SurveyResponses: React.FC = () => {
   const fetchResponses = async () => {
     setLoading(true);
     try {
+      // Construct the base URL to the API endpoint
       const url = new URL(`${server_url}/api/questions/responses`);
+      // Append pagination parameter (e.g., ?page=1)
       url.searchParams.append("page", currentPage.toString());
       if (emailFilter) url.searchParams.append("email_address", emailFilter);
 

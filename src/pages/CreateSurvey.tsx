@@ -70,7 +70,7 @@ export default function CreateSurvey() {
         questions,
       };
       localStorage.setItem("survey_draft", JSON.stringify(surveyDraft));
-      console.log("Survey draft saved to localStorage"); // Debugging log
+      // console.log("Survey draft saved to localStorage"); // Debugging log
     }
   }, [title, description, isPublished, questions]);
 
