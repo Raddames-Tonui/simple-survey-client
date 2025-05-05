@@ -141,7 +141,6 @@ export const SurveyProvider = ({ children }: { children: React.ReactNode }) => {
 
   // ---- AUTO FETCH DEFAULT SURVEY (OPTIONAL) ---- //
   useEffect(() => {
-    // Optional: you could call fetchSurveyQuestions("1") here
     setLoading(false); // Don't auto-fetch, just stop loading spinner
   }, []);
 

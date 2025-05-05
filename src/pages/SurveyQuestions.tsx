@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // To get the survey id from the URL
+import { useParams } from "react-router-dom"; 
 import Loader from "../components/Loader";
 import { useSurveyContext } from "../context/SurveyContext";
 
@@ -23,24 +23,32 @@ const SurveyQuestions = (): React.JSX.Element => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
   };
 
+  // Handles checkbox input changes for multi-select questions
   const handleCheckboxChange = (id: number, value: string) => {
     setAnswers((prev) => {
+      // Get the current array of selected values for the given question ID, or an empty array if none
       const existing = prev[id] || [];
+
+      // If the clicked value is already selected, remove it (uncheck), otherwise add it (check)
       const updated = existing.includes(value)
-        ? existing.filter((v: string) => v !== value)
-        : [...existing, value];
+        ? existing.filter((v: string) => v !== value) // remove value
+        : [...existing, value]; // add value
+
+      // Return the updated state with the modified array for this question ID
       return { ...prev, [id]: updated };
     });
   };
 
+  // Handles file input changes for a specific question (by ID)
   const handleFileChange = (
     id: number,
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    // Check if files were selected
     if (event.target.files) {
       setFiles((prev) => ({
         ...prev,
-        [id]: Array.from(event.target.files),
+        [id]: Array.from(event.target.files), // convert FileList to array and assign to current ID
       }));
     }
   };
@@ -52,7 +60,6 @@ const SurveyQuestions = (): React.JSX.Element => {
     //  Object.values(files) gets the values (which are arrays of files) from the files object.
     // .flat() flattens the nested arrays into a single array, so submitSurvey receives a proper array of files.
     const flattenedFiles = Object.values(files).flat();
-
     submitSurvey(answers, flattenedFiles, id); // passing flattened files as an array
   };
 
@@ -142,18 +149,20 @@ const SurveyQuestions = (): React.JSX.Element => {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-y-6">
-          {[...survey.questions]
-            .sort((a, b) => a.order - b.order)
+          {[...survey.questions] // Create a shallow copy of the questions array to avoid mutating the original
+            .sort((a, b) => a.order - b.order) // Sort questions based on their 'order' property
             .map((question) => (
               <div key={question.id}>
+                {/* Unique key for React reconciliation */}
                 <label className="font-semibold block mb-1">
-                  {question.text}
+                  {question.text} {/* Display the question text */}
                 </label>
-                {question.description && (
+                {question.description && ( // If a description exists, show it
                   <p className="text-sm text-gray-500 mt-1">
                     {question.description}
                   </p>
                 )}
+                {/* Render appropriate input element based on question type */}
                 {renderInput(question)}
               </div>
             ))}
