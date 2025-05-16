@@ -82,4 +82,5 @@ Pull requests are welcome! For major changes, open an issue first to discuss wha
 
 ---
 
-Made with ❤️ by Raddames Tonui
+If it works, thank Raddames Tonui. If it doesn't, blame the spec. 🤓
+
